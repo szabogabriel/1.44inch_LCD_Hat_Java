@@ -1,10 +1,12 @@
 <project name="1.44inch-LCD-HAT-native-java-lib" basedir="." default="package">
 	
+	<property name="version" value="0.1.0_SNAPSHOT"/>
+	
 	<property name="dir.src" value="${basedir}/src"/>
 	<property name="dir.bin" value="${basedir}/bin"/>
 	<property name="dir.lib" value="${basedir}/lib"/>
 	
-	<property name="file.jar" value="${basedir}/release/lcd.java.jar"/>
+	<property name="file.jar" value="${basedir}/release/lcd.java-${version}.jar"/>
 	
 	<target name="clean" unless="skip.clean">
 		<delete file="${file.jar}" quiet="true"/>
