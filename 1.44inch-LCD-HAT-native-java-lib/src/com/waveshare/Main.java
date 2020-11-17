@@ -1,6 +1,10 @@
 package com.waveshare;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+
+import javax.imageio.ImageIO;
 
 import com.pi4j.io.gpio.GpioController;
 import com.pi4j.io.gpio.GpioFactory;
@@ -50,8 +54,8 @@ public class Main {
 				if (state.isLow()) {
 					try {
 						System.out.println("Calling demo.");
-						//lcdHat.demo();
-						lcdHat.demo3();
+						BufferedImage image = ImageIO.read(new File("sky.bmp"));
+						lcdHat.displayBitmap(0, 0, image);
 						System.out.println("Done.");
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -62,7 +66,11 @@ public class Main {
 		keyboardInput.setListener(KeyboardHat.Keys.KEY_C, new KeyInputListener() {
 			@Override
 			public void keyStateChanged(PinState state) {
-				System.exit(0);
+				try {
+					lcdHat.demo2();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 		

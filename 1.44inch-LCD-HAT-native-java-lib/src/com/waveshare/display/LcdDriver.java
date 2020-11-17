@@ -211,15 +211,15 @@ public class LcdDriver {
 		Pins.DATA_COMMAND_SELECT.pin.high();
 	}
 	
-	private void writeData(char ... data) throws IOException {
+	public void writeData(short ... data) throws IOException {
 		writeData(toByteArray(data));
 	}
 	
-	private void writeData(byte ... data) throws IOException {
+	public void writeData(byte ... data) throws IOException {
 		spiDevice.write(data);
 	}
 	
-	private byte[] toByteArray(char ... data) {
+	private byte[] toByteArray(short ... data) {
 		byte[] ret = new byte[data.length * 2];
 		for (int i = 0; i < data.length; i++) {
 			ret[2 * i] = (byte)(data[i] >> 8);
@@ -228,7 +228,7 @@ public class LcdDriver {
 		return ret;
 	}
 	
-	private void setWindows(int startX, int startY, int endX, int endY) throws IOException {
+	public void setWindows(int startX, int startY, int endX, int endY) throws IOException {
 		//set the X coordinates
 		writeRegister((byte)0x2A);
 		writeData(	(byte)0x00,
@@ -252,7 +252,7 @@ public class LcdDriver {
 	
 	private void setColor(Color color, int x, int y) throws IOException {
 		int size = Math.abs(x * y);
-		byte[] convertedColor = toByteArray((char)(ColorUtil.convertRgb888To565(color.getRGB())));
+		byte[] convertedColor = toByteArray((short)(ColorUtil.convertRgb888To565(color.getRGB())));
 		byte[] data = new byte[size * 2];
 		for (int i = 0; i < size; i++) {
 			data[i * 2] = convertedColor[0];

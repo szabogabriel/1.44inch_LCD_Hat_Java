@@ -1,6 +1,7 @@
 package com.waveshare.display;
 
 import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import com.pi4j.io.gpio.GpioController;
@@ -11,6 +12,7 @@ import com.waveshare.display.enums.LineStyle;
 import com.waveshare.display.font.Font;
 import com.waveshare.display.font.Font12;
 import com.waveshare.display.font.Font8;
+import com.waveshare.display.util.ColorUtil;
 
 public class LcdGui {
 
@@ -294,19 +296,24 @@ public class LcdGui {
 		displayString(pointX, pointY, toPass, font, backgroundColor, foregroundColor);
 	}
 
-//	void GUI_Disbitmap(int Xpoint, int Ypoint, const unsigned char *pBmp,
-//							int Width, int Height)
-//	{
-//	    int i, j, byteWidth = (Width + 7)/8;
-//	    for(j = 0; j < Height; j++) {
-//	        for(i = 0; i <Width; i ++) {
-//	            if(*(pBmp + j*byteWidth + i/8) & (128 >> (i & 7))) {
-//	                GUI_DrawPoint(Xpoint+i, Ypoint+j, WHITE, DOT_PIXEL_DFT, DotStyle.FILL_AROUND);
-//	            }
-//	        }
-//	    }
-//	}
-
+	public void displayBitmap(int x, int y, BufferedImage image) {
+		int width = image.getWidth();
+		int height = image.getHeight();
+		
+		try {
+			short [] buffer = new short[width];
+			DRIVER.setWindows(x, y, x + width, y + height);
+			for (int i = 0; i < height; i++) {
+				for (int j = 0; j < width; j++) {
+					buffer[j] = (short)(ColorUtil.convertRgb888To565(image.getRGB(j, i)));
+				}
+				DRIVER.writeData(buffer);
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void demo1() throws IOException {
 		while (true) {
 			DRIVER.clear(Color.BLACK);
