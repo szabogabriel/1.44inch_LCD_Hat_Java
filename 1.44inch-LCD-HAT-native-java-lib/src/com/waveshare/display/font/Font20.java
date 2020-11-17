@@ -2,7 +2,7 @@ package com.waveshare.display.font;
 
 public class Font20 implements Font {
 	
-	private byte [] data = new byte [] {
+	private static final byte [] data = new byte [] {
 			// @0 ' ' (14 pixels wide)
 			(byte)0x00, (byte)0x00, //               
 			(byte)0x00, (byte)0x00, //               
