@@ -13,19 +13,25 @@ import com.waveshare.display.LcdGui;
 import com.waveshare.keyboard.KeyboardHat;
 import com.waveshare.listener.KeyInputListener;
 
-public class Main {
+public class Hat {
 	
-	private static GpioController INSTANCE;
-	private static LcdGui lcdHat;
-	private static KeyboardHat keyboardHat;
+	public static GpioController INSTANCE;
+	public static LcdGui lcdHat;
+	public static KeyboardHat keyboardHat;
 	
 	public static void main(String [] args) throws InterruptedException {
+		init();
+		
+		addControllers();
+		
+		waitEndlessly();
+	}
+	
+	public static void init() {
 		INSTANCE = GpioFactory.getInstance();
 		
 		lcdHat = createLcdGui();
 		keyboardHat = createKeyboardHat();
-		
-		waitEndlessly();
 	}
 	
 	private static LcdGui createLcdGui() {
@@ -38,9 +44,11 @@ public class Main {
 	}
 	
 	private static KeyboardHat createKeyboardHat() {
-		KeyboardHat keyboardInput = new KeyboardHat(INSTANCE);
-		
-		keyboardInput.setListener(KeyboardHat.Keys.KEY_A, new KeyInputListener() {
+		return new KeyboardHat(INSTANCE);
+	}
+	
+	private static void addControllers() {		
+		keyboardHat.setListener(KeyboardHat.Keys.KEY_A, new KeyInputListener() {
 			@Override
 			public void keyStateChanged(PinState state) {
 				if (state.isLow()) {
@@ -48,7 +56,7 @@ public class Main {
 				}
 			}
 		});
-		keyboardInput.setListener(KeyboardHat.Keys.KEY_B, new KeyInputListener() {
+		keyboardHat.setListener(KeyboardHat.Keys.KEY_B, new KeyInputListener() {
 			@Override
 			public void keyStateChanged(PinState state) {
 				if (state.isLow()) {
@@ -63,7 +71,7 @@ public class Main {
 				}
 			}
 		});
-		keyboardInput.setListener(KeyboardHat.Keys.KEY_C, new KeyInputListener() {
+		keyboardHat.setListener(KeyboardHat.Keys.KEY_C, new KeyInputListener() {
 			@Override
 			public void keyStateChanged(PinState state) {
 				try {
@@ -73,8 +81,6 @@ public class Main {
 				}
 			}
 		});
-		
-		return keyboardInput;
 	}
 	
 	private static void waitEndlessly() {
