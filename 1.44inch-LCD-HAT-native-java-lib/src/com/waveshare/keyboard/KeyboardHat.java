@@ -38,7 +38,7 @@ public class KeyboardHat {
 			it.pin.addListener(new GpioPinListenerDigital() {
 	            @Override
 	            public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-	            	System.out.println(" --> " + it.name + " changed: " + event.getPin() + " = " + event.getState());
+//	            	System.out.println(" --> " + it.name + " changed: " + event.getPin() + " = " + event.getState());
 	            	if (it.listener != null) {
 	            		it.listener.keyStateChanged(event.getState());
 	            	}
