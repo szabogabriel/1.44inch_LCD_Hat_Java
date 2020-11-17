@@ -15,55 +15,58 @@ import com.waveshare.listener.KeyInputListener;
 
 public class Hat {
 	
-	public static GpioController INSTANCE;
-	public static LcdGui lcdHat;
-	public static KeyboardHat keyboardHat;
+	private static final GpioController GPIO_CONTROLLER = GpioFactory.getInstance();
+	public final static Hat INSTANCE = new Hat();
 	
-	public static void main(String [] args) throws InterruptedException {
-		init();
-		
-		addControllers();
-		
-		waitEndlessly();
-	}
+	public LcdGui lcdHat;
+	public KeyboardHat keyboardHat;
 	
-	public static void init() {
-		INSTANCE = GpioFactory.getInstance();
-		
+	private Hat() {
 		lcdHat = createLcdGui();
 		keyboardHat = createKeyboardHat();
 	}
 	
-	private static LcdGui createLcdGui() {
+	private LcdGui createLcdGui() {
 		try {
-			return new LcdGui(INSTANCE);
+			return new LcdGui(GPIO_CONTROLLER);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		return null;
 	}
 	
-	private static KeyboardHat createKeyboardHat() {
-		return new KeyboardHat(INSTANCE);
+	private KeyboardHat createKeyboardHat() {
+		return new KeyboardHat(GPIO_CONTROLLER);
+	}
+	
+	
+	/*
+	 * Starting here is only the demo part of the library.
+	 */
+	
+	public static void main(String [] args) throws InterruptedException {
+		addControllers();
+		
+		waitEndlessly();
 	}
 	
 	private static void addControllers() {		
-		keyboardHat.setListener(KeyboardHat.Keys.KEY_A, new KeyInputListener() {
+		INSTANCE.keyboardHat.setListener(KeyboardHat.Keys.KEY_A, new KeyInputListener() {
 			@Override
 			public void keyStateChanged(PinState state) {
 				if (state.isLow()) {
-					lcdHat.flipBacklight();
+					INSTANCE.lcdHat.flipBacklight();
 				}
 			}
 		});
-		keyboardHat.setListener(KeyboardHat.Keys.KEY_B, new KeyInputListener() {
+		INSTANCE.keyboardHat.setListener(KeyboardHat.Keys.KEY_B, new KeyInputListener() {
 			@Override
 			public void keyStateChanged(PinState state) {
 				if (state.isLow()) {
 					try {
 						System.out.println("Calling demo.");
 						BufferedImage image = ImageIO.read(new File("sky.bmp"));
-						lcdHat.displayBitmap(0, 0, image);
+						INSTANCE.lcdHat.displayBitmap(0, 0, image);
 						System.out.println("Done.");
 					} catch (IOException e) {
 						e.printStackTrace();
@@ -71,11 +74,11 @@ public class Hat {
 				}
 			}
 		});
-		keyboardHat.setListener(KeyboardHat.Keys.KEY_C, new KeyInputListener() {
+		INSTANCE.keyboardHat.setListener(KeyboardHat.Keys.KEY_C, new KeyInputListener() {
 			@Override
 			public void keyStateChanged(PinState state) {
 				try {
-					lcdHat.demo2();
+					INSTANCE.lcdHat.demo2();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
