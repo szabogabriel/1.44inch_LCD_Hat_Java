@@ -314,6 +314,14 @@ public class LcdGui {
 		}
 	}
 	
+	public void clear(Color color) {
+		try {
+			DRIVER.clear(color);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void demo1() throws IOException {
 		while (true) {
 			DRIVER.clear(Color.BLACK);
