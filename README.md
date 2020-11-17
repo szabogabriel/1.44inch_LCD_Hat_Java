@@ -4,7 +4,7 @@ This project is the Java implementation of the demo codes released as part of th
 
 ## Description
 
-This port was born out of sheer convenience. It is **HEAVILY** inspired by the provided C and Python demo codes, and is missing quiet a few parts. Some minor optimalizations were performed, to speed up the serial communication with the LCD HAT. The project currently is in an early phase.
+This port was born out of sheer convenience. It is **HEAVILY** inspired by the provided C and Python demo codes, and is missing some parts. Some minor optimalizations were performed, to speed up the serial communication with the LCD HAT. The project currently is in an early phase.
 
 ## Setting up the Raspberry PI
 
