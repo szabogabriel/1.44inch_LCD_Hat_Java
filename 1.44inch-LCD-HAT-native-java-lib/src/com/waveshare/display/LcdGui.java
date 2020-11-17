@@ -25,70 +25,50 @@ public class LcdGui {
 		this.DRIVER = new LcdDriver(controller, DISPLAY);
 	}
 
-	private void GUI_Swop(int Point1, int Point2) {
-		int Temp;
-		Temp = Point1;
-		Point1 = Point2;
-		Point2 = Temp;
-	}
-
-	/********************************************************************************
-	 * function: Draw Point(Xpoint, Ypoint) Fill the color parameter: Xpoint : The x
-	 * coordinate of the point Ypoint : The y coordinate of the point Color : Set
-	 * color Dot_Pixel : point size
-	 * 
-	 * @throws IOException
-	 ********************************************************************************/
-	public void GUI_DrawPoint(int Xpoint, int Ypoint, Color color, DotPixel Dot_Pixel, DotStyle DOT_STYLE) throws IOException {
-		if (Xpoint > DISPLAY.lcdDisplayColumn || Ypoint > DISPLAY.lcdDisplayPage) {
+	public void drawPoint(int pointX, int pointY, Color color, DotPixel pixelWidth, DotStyle dotStyle) throws IOException {
+		if (pointX > DISPLAY.lcdDisplayColumn || pointY > DISPLAY.lcdDisplayPage) {
 			return;
 		}
 
 		int XDir_Num, YDir_Num;
-		if (DOT_STYLE == DotStyle.FILL_AROUND) {
-			for (XDir_Num = 0; XDir_Num < 2 * Dot_Pixel.value() - 1; XDir_Num++) {
-				for (YDir_Num = 0; YDir_Num < 2 * Dot_Pixel.value() - 1; YDir_Num++) {
-					DRIVER.setPointColor(color, Xpoint + XDir_Num - Dot_Pixel.value(),
-							Ypoint + YDir_Num - Dot_Pixel.value());
+		if (dotStyle == DotStyle.FILL_AROUND) {
+			for (XDir_Num = 0; XDir_Num < 2 * pixelWidth.value() - 1; XDir_Num++) {
+				for (YDir_Num = 0; YDir_Num < 2 * pixelWidth.value() - 1; YDir_Num++) {
+					DRIVER.setPointColor(color, pointX + XDir_Num - pixelWidth.value(),
+							pointY + YDir_Num - pixelWidth.value());
 				}
 			}
 		} else {
-			for (XDir_Num = 0; XDir_Num < Dot_Pixel.value(); XDir_Num++) {
-				for (YDir_Num = 0; YDir_Num < Dot_Pixel.value(); YDir_Num++) {
-					DRIVER.setPointColor(color, Xpoint + XDir_Num - 1, Ypoint + YDir_Num - 1);
+			for (XDir_Num = 0; XDir_Num < pixelWidth.value(); XDir_Num++) {
+				for (YDir_Num = 0; YDir_Num < pixelWidth.value(); YDir_Num++) {
+					DRIVER.setPointColor(color, pointX + XDir_Num - 1, pointY + YDir_Num - 1);
 				}
 			}
 		}
 	}
 
-	/********************************************************************************
-	 * function: Draw a line of arbitrary slope parameter: Xstart ：Starting x point
-	 * coordinates Ystart ：Starting x point coordinates Xend ：End point x coordinate
-	 * Yend ：End point y coordinate Color ：The color of the line segment
-	 * 
-	 * @throws IOException
-	 ********************************************************************************/
-	public void GUI_DrawLine(int Xstart, int Ystart, int Xend, int Yend, Color color, LineStyle Line_Style, DotPixel Dot_Pixel)
+
+	public void drawLine(int startX, int startY, int endX, int endY, Color color, LineStyle lineStyle, DotPixel pixelWidth)
 			throws IOException {
 
-		if (Xstart > DISPLAY.lcdDisplayColumn || Ystart > DISPLAY.lcdDisplayPage || Xend > DISPLAY.lcdDisplayColumn
-				|| Yend > DISPLAY.lcdDisplayColumn) {
+		if (startX > DISPLAY.lcdDisplayColumn || startY > DISPLAY.lcdDisplayPage || endX > DISPLAY.lcdDisplayColumn
+				|| endY > DISPLAY.lcdDisplayColumn) {
 			return;
 		}
 
-		if (Xstart > Xend)
-			GUI_Swop(Xstart, Xend);
-		if (Ystart > Yend)
-			GUI_Swop(Ystart, Yend);
+		if (startX > endX)
+			GUI_Swop(startX, endX);
+		if (startY > endY)
+			GUI_Swop(startY, endY);
 
-		int Xpoint = Xstart;
-		int Ypoint = Ystart;
-		int dx = Xend - ((Xstart >= 0) ? Xend - Xstart : Xstart - Xend);
-		int dy = Yend - ((Ystart <= 0) ? Yend - Ystart : Ystart - Yend);
+		int Xpoint = startX;
+		int Ypoint = startY;
+		int dx = endX - ((startX >= 0) ? endX - startX : startX - endX);
+		int dy = endY - ((startY <= 0) ? endY - startY : startY - endY);
 
 		// Increment direction, 1 is positive, -1 is counter;
-		int XAddway = Xstart < Xend ? 1 : -1;
-		int YAddway = Ystart < Yend ? 1 : -1;
+		int XAddway = startX < endX ? 1 : -1;
+		int YAddway = startY < endY ? 1 : -1;
 
 		// Cumulative error
 		int Esp = dx + dy;
@@ -97,21 +77,21 @@ public class LcdGui {
 		for (;;) {
 			Line_Style_Temp++;
 			// Painted dotted line, 2 point is really virtual
-			if (Line_Style == LineStyle.DOTTED && Line_Style_Temp % 3 == 0) {
+			if (lineStyle == LineStyle.DOTTED && Line_Style_Temp % 3 == 0) {
 				// printf("LINE_DOTTED\r\n");
-				GUI_DrawPoint(Xpoint, Ypoint, Color.WHITE, Dot_Pixel, DotStyle.FILL_AROUND);
+				drawPoint(Xpoint, Ypoint, Color.WHITE, pixelWidth, DotStyle.FILL_AROUND);
 				Line_Style_Temp = 0;
 			} else {
-				GUI_DrawPoint(Xpoint, Ypoint, color, Dot_Pixel, DotStyle.FILL_AROUND);
+				drawPoint(Xpoint, Ypoint, color, pixelWidth, DotStyle.FILL_AROUND);
 			}
 			if (2 * Esp >= dy) {
-				if (Xpoint == Xend)
+				if (Xpoint == endX)
 					break;
 				Esp += dy;
 				Xpoint += XAddway;
 			}
 			if (2 * Esp <= dx) {
-				if (Ypoint == Yend)
+				if (Ypoint == endY)
 					break;
 				Esp += dx;
 				Ypoint += YAddway;
@@ -119,147 +99,121 @@ public class LcdGui {
 		}
 	}
 
-	/********************************************************************************
-	 * function: Draw a rectangle parameter: Xstart ：Rectangular Starting x point
-	 * coordinates Ystart ：Rectangular Starting x point coordinates Xend
-	 * ：Rectangular End point x coordinate Yend ：Rectangular End point y coordinate
-	 * Color ：The color of the Rectangular segment Filled : Whether it is filled---
-	 * 1 solid 0：empty
-	 * 
-	 * @throws IOException
-	 ********************************************************************************/
-	public void GUI_DrawRectangle(int Xstart, int Ystart, int Xend, int Yend, Color color, DrawFill filled, DotPixel Dot_Pixel)
+
+	public void drawRectangle(int startX, int startY, int endX, int endY, Color color, DrawFill filled, DotPixel pixelWidth)
 			throws IOException {
-		if (Xstart > DISPLAY.lcdDisplayColumn || Ystart > DISPLAY.lcdDisplayPage || Xend > DISPLAY.lcdDisplayColumn
-				|| Yend > DISPLAY.lcdDisplayPage) {
+		if (startX > DISPLAY.lcdDisplayColumn || startY > DISPLAY.lcdDisplayPage || endX > DISPLAY.lcdDisplayColumn
+				|| endY > DISPLAY.lcdDisplayPage) {
 			return;
 		}
-		// printf("sLCD_DIS.LCD_Dis_Column = %d\r\n",sLCD_DIS.LCD_Dis_Column);
-		// printf("sLCD_DIS.LCD_Dis_Page = %d\r\n",sLCD_DIS.LCD_Dis_Page);
-		if (Xstart > Xend)
-			GUI_Swop(Xstart, Xend);
-		if (Ystart > Yend)
-			GUI_Swop(Ystart, Yend);
+
+		if (startX > endX)
+			GUI_Swop(startX, endX);
+		if (startY > endY)
+			GUI_Swop(startY, endY);
 
 		int Ypoint;
 		if (filled == DrawFill.FILLED) {
-			for (Ypoint = Ystart; Ypoint < Yend; Ypoint++) {
-				GUI_DrawLine(Xstart, Ypoint, Xend, Ypoint, color, LineStyle.SOLID, Dot_Pixel);
+			for (Ypoint = startY; Ypoint < endY; Ypoint++) {
+				drawLine(startX, Ypoint, endX, Ypoint, color, LineStyle.SOLID, pixelWidth);
 			}
 		} else {
-			GUI_DrawLine(Xstart, Ystart, Xend, Ystart, color, LineStyle.SOLID, Dot_Pixel);
-			GUI_DrawLine(Xstart, Ystart, Xstart, Yend, color, LineStyle.SOLID, Dot_Pixel);
-			GUI_DrawLine(Xend, Yend, Xend, Ystart, color, LineStyle.SOLID, Dot_Pixel);
-			GUI_DrawLine(Xend, Yend, Xstart, Yend, color, LineStyle.SOLID, Dot_Pixel);
+			drawLine(startX, startY, endX, startY, color, LineStyle.SOLID, pixelWidth);
+			drawLine(startX, startY, startX, endY, color, LineStyle.SOLID, pixelWidth);
+			drawLine(endX, endY, endX, startY, color, LineStyle.SOLID, pixelWidth);
+			drawLine(endX, endY, startX, endY, color, LineStyle.SOLID, pixelWidth);
 		}
 	}
 
-	/********************************************************************************
-	 * function: Use the 8-point method to draw a circle of the specified size at
-	 * the specified position. parameter: X_Center ：Center X coordinate Y_Center
-	 * ：Center Y coordinate Radius ：circle Radius Color ：The color of the ：circle
-	 * segment Filled : Whether it is filled: 1 filling 0：Do not
-	 * 
-	 * @throws IOException
-	 ********************************************************************************/
-	public void GUI_DrawCircle(int X_Center, int Y_Center, int Radius, Color Color, DrawFill Draw_Fill, DotPixel Dot_Pixel)
+	public void drawCircle(int centerX, int centerY, int radius, Color Color, DrawFill filled, DotPixel pixelWidth)
 			throws IOException {
-		if (X_Center > DISPLAY.lcdDisplayColumn || Y_Center >= DISPLAY.lcdDisplayPage) {
+		if (centerX > DISPLAY.lcdDisplayColumn || centerY >= DISPLAY.lcdDisplayPage) {
 			return;
 		}
 
 		// Draw a circle from(0, R) as a starting point
-		int XCurrent, YCurrent;
-		XCurrent = 0;
-		YCurrent = Radius;
+		int currentX = 0;
+		int currentY = radius;
 
 		// Cumulative error,judge the next point of the logo
-		int Esp = 3 - (Radius << 1);
+		int esp = 3 - (radius << 1);
 
 		int sCountY;
-		if (Draw_Fill == DrawFill.FILLED) {
-			while (XCurrent <= YCurrent) { // Realistic circles
-				for (sCountY = XCurrent; sCountY <= YCurrent; sCountY++) {
-					GUI_DrawPoint(X_Center + XCurrent, Y_Center + sCountY, Color, DotPixel.DOT_PIXEL_1_1,
+		if (filled == DrawFill.FILLED) {
+			while (currentX <= currentY) { // Realistic circles
+				for (sCountY = currentX; sCountY <= currentY; sCountY++) {
+					drawPoint(centerX + currentX, centerY + sCountY, Color, DotPixel.DOT_PIXEL_1_1,
 							DotStyle.FILL_AROUND); // 1
-					GUI_DrawPoint(X_Center - XCurrent, Y_Center + sCountY, Color, DotPixel.DOT_PIXEL_1_1,
+					drawPoint(centerX - currentX, centerY + sCountY, Color, DotPixel.DOT_PIXEL_1_1,
 							DotStyle.FILL_AROUND); // 2
-					GUI_DrawPoint(X_Center - sCountY, Y_Center + XCurrent, Color, DotPixel.DOT_PIXEL_1_1,
+					drawPoint(centerX - sCountY, centerY + currentX, Color, DotPixel.DOT_PIXEL_1_1,
 							DotStyle.FILL_AROUND); // 3
-					GUI_DrawPoint(X_Center - sCountY, Y_Center - XCurrent, Color, DotPixel.DOT_PIXEL_1_1,
+					drawPoint(centerX - sCountY, centerY - currentX, Color, DotPixel.DOT_PIXEL_1_1,
 							DotStyle.FILL_AROUND); // 4
-					GUI_DrawPoint(X_Center - XCurrent, Y_Center - sCountY, Color, DotPixel.DOT_PIXEL_1_1,
+					drawPoint(centerX - currentX, centerY - sCountY, Color, DotPixel.DOT_PIXEL_1_1,
 							DotStyle.FILL_AROUND); // 5
-					GUI_DrawPoint(X_Center + XCurrent, Y_Center - sCountY, Color, DotPixel.DOT_PIXEL_1_1,
+					drawPoint(centerX + currentX, centerY - sCountY, Color, DotPixel.DOT_PIXEL_1_1,
 							DotStyle.FILL_AROUND); // 6
-					GUI_DrawPoint(X_Center + sCountY, Y_Center - XCurrent, Color, DotPixel.DOT_PIXEL_1_1,
+					drawPoint(centerX + sCountY, centerY - currentX, Color, DotPixel.DOT_PIXEL_1_1,
 							DotStyle.FILL_AROUND); // 7
-					GUI_DrawPoint(X_Center + sCountY, Y_Center + XCurrent, Color, DotPixel.DOT_PIXEL_1_1,
+					drawPoint(centerX + sCountY, centerY + currentX, Color, DotPixel.DOT_PIXEL_1_1,
 							DotStyle.FILL_AROUND);
 				}
-				if (Esp < 0)
-					Esp += 4 * XCurrent + 6;
+				if (esp < 0)
+					esp += 4 * currentX + 6;
 				else {
-					Esp += 10 + 4 * (XCurrent - YCurrent);
-					YCurrent--;
+					esp += 10 + 4 * (currentX - currentY);
+					currentY--;
 				}
-				XCurrent++;
+				currentX++;
 			}
 		} else { // Draw a hollow circle
-			while (XCurrent <= YCurrent) {
-				GUI_DrawPoint(X_Center + XCurrent, Y_Center + YCurrent, Color, Dot_Pixel, DotStyle.FILL_AROUND); // 1
-				GUI_DrawPoint(X_Center - XCurrent, Y_Center + YCurrent, Color, Dot_Pixel, DotStyle.FILL_AROUND); // 2
-				GUI_DrawPoint(X_Center - YCurrent, Y_Center + XCurrent, Color, Dot_Pixel, DotStyle.FILL_AROUND); // 3
-				GUI_DrawPoint(X_Center - YCurrent, Y_Center - XCurrent, Color, Dot_Pixel, DotStyle.FILL_AROUND); // 4
-				GUI_DrawPoint(X_Center - XCurrent, Y_Center - YCurrent, Color, Dot_Pixel, DotStyle.FILL_AROUND); // 5
-				GUI_DrawPoint(X_Center + XCurrent, Y_Center - YCurrent, Color, Dot_Pixel, DotStyle.FILL_AROUND); // 6
-				GUI_DrawPoint(X_Center + YCurrent, Y_Center - XCurrent, Color, Dot_Pixel, DotStyle.FILL_AROUND); // 7
-				GUI_DrawPoint(X_Center + YCurrent, Y_Center + XCurrent, Color, Dot_Pixel, DotStyle.FILL_AROUND); // 0
+			while (currentX <= currentY) {
+				drawPoint(centerX + currentX, centerY + currentY, Color, pixelWidth, DotStyle.FILL_AROUND); // 1
+				drawPoint(centerX - currentX, centerY + currentY, Color, pixelWidth, DotStyle.FILL_AROUND); // 2
+				drawPoint(centerX - currentY, centerY + currentX, Color, pixelWidth, DotStyle.FILL_AROUND); // 3
+				drawPoint(centerX - currentY, centerY - currentX, Color, pixelWidth, DotStyle.FILL_AROUND); // 4
+				drawPoint(centerX - currentX, centerY - currentY, Color, pixelWidth, DotStyle.FILL_AROUND); // 5
+				drawPoint(centerX + currentX, centerY - currentY, Color, pixelWidth, DotStyle.FILL_AROUND); // 6
+				drawPoint(centerX + currentY, centerY - currentX, Color, pixelWidth, DotStyle.FILL_AROUND); // 7
+				drawPoint(centerX + currentY, centerY + currentX, Color, pixelWidth, DotStyle.FILL_AROUND); // 0
 
-				if (Esp < 0)
-					Esp += 4 * XCurrent + 6;
+				if (esp < 0)
+					esp += 4 * currentX + 6;
 				else {
-					Esp += 10 + 4 * (XCurrent - YCurrent);
-					YCurrent--;
+					esp += 10 + 4 * (currentX - currentY);
+					currentY--;
 				}
-				XCurrent++;
+				currentX++;
 			}
 		}
 	}
 
-	/********************************************************************************
-	 * function: Show English characters parameter: Xpoint ：X coordinate Ypoint ：Y
-	 * coordinate Acsii_Char ：To display the English characters Font ：A structure
-	 * pointer that displays a character size Color_Background : Select the
-	 * background color of the English character Color_Foreground : Select the
-	 * foreground color of the English character
-	 * 
-	 * @throws IOException
-	 ********************************************************************************/
-	public void GUI_DisChar(int Xpoint, int Ypoint, byte Acsii_Char, Font font, Color Color_Background, Color Color_Foreground)
+
+	public void displayCharacter(int pointX, int pointY, byte asciiChar, Font font, Color backgroundColor, Color foregroundColor)
 			throws IOException {
-		if (Xpoint >= DISPLAY.lcdDisplayColumn || Ypoint >= DISPLAY.lcdDisplayPage) {
+		if (pointX >= DISPLAY.lcdDisplayColumn || pointY >= DISPLAY.lcdDisplayPage) {
 			return;
 		}
 
-		int Char_Offset = (Acsii_Char - ' ') * font.getHeight()
+		int charOffset = (asciiChar - ' ') * font.getHeight()
 				* (font.getWidth() / 8 + ((font.getWidth() % 8 > 0) ? 1 : 0));
-		int ptr = Char_Offset;
+		int ptr = charOffset;
 
 		for (int page = 0; page < font.getHeight(); page++) {
 			for (int column = 0; column < font.getWidth(); column++) {
 				// To determine whether the font background color and screen background color is
 				// consistent
-				if (FONT_BACKGROUND.equals(Color_Background)) { // this process is to speed up the scan
+				if (FONT_BACKGROUND.equals(backgroundColor)) { // this process is to speed up the scan
 					if ((font.getTable()[ptr] & (0x80 >> (column % 8))) > 0)
-						GUI_DrawPoint(Xpoint + column, Ypoint + page, Color_Foreground, DotPixel.DOT_PIXEL_1_1,
+						drawPoint(pointX + column, pointY + page, foregroundColor, DotPixel.DOT_PIXEL_1_1,
 								DotStyle.FILL_AROUND);
 				} else {
 					if ((font.getTable()[ptr] & (0x80 >> (column % 8))) > 0) {
-						GUI_DrawPoint(Xpoint + column, Ypoint + page, Color_Foreground, DotPixel.DOT_PIXEL_1_1,
+						drawPoint(pointX + column, pointY + page, foregroundColor, DotPixel.DOT_PIXEL_1_1,
 								DotStyle.FILL_AROUND);
 					} else {
-						GUI_DrawPoint(Xpoint + column, Ypoint + page, Color_Background, DotPixel.DOT_PIXEL_1_1,
+						drawPoint(pointX + column, pointY + page, backgroundColor, DotPixel.DOT_PIXEL_1_1,
 								DotStyle.FILL_AROUND);
 					}
 				}
@@ -272,21 +226,12 @@ public class LcdGui {
 		} /* Write all */
 	}
 
-	/********************************************************************************
-	 * function: Display the string parameter: Xstart ：X coordinate Ystart ：Y
-	 * coordinate pString ：The first address of the English string to be displayed
-	 * Font ：A structure pointer that displays a character size Color_Background :
-	 * Select the background color of the English character Color_Foreground :
-	 * Select the foreground color of the English character
-	 * 
-	 * @throws IOException
-	 ********************************************************************************/
-	public void GUI_DisString_EN(int Xstart, int Ystart, String text, Font font, Color Color_Background,
-			Color Color_Foreground) throws IOException {
-		int Xpoint = Xstart;
-		int Ypoint = Ystart;
+	public void displayString(int startX, int startY, String text, Font font, Color backgroundColor,
+			Color foregroundColor) throws IOException {
+		int pointX = startX;
+		int pointY = startY;
 
-		if (Xstart >= DISPLAY.lcdDisplayColumn || Ystart >= DISPLAY.lcdDisplayPage) {
+		if (startX >= DISPLAY.lcdDisplayColumn || startY >= DISPLAY.lcdDisplayPage) {
 			return;
 		}
 
@@ -294,66 +239,59 @@ public class LcdGui {
 		while (pString != text.length()) {
 			// if X direction filled , reposition to(Xstart,Ypoint),Ypoint is Y direction
 			// plus the height of the character
-			if ((Xpoint + font.getWidth()) > DISPLAY.lcdDisplayColumn) {
-				Xpoint = Xstart;
-				Ypoint += font.getHeight();
+			if ((pointX + font.getWidth()) > DISPLAY.lcdDisplayColumn) {
+				pointX = startX;
+				pointY += font.getHeight();
 			}
 
 			// If the Y direction is full, reposition to(Xstart, Ystart)
-			if ((Ypoint + font.getHeight()) > DISPLAY.lcdDisplayPage) {
-				Xpoint = Xstart;
-				Ypoint = Ystart;
+			if ((pointY + font.getHeight()) > DISPLAY.lcdDisplayPage) {
+				pointX = startX;
+				pointY = startY;
 			}
-			GUI_DisChar(Xpoint, Ypoint, text.getBytes()[pString], font, Color_Background, Color_Foreground);
+			displayCharacter(pointX, pointY, text.getBytes()[pString], font, backgroundColor, foregroundColor);
 
 			// The next character of the address
 			pString++;
 
 			// The next word of the abscissa increases the font of the broadband
-			Xpoint += font.getWidth() + 1;
+			pointX += font.getWidth() + 1;
 		}
 	}
 
-	/****************************************
-	 * WHITE**************************************** function: Display the string
-	 * parameter: Xstart ：X coordinate Ystart : Y coordinate Nummber: The number
-	 * displayed Font ：A structure pointer that displays a character size
-	 * Color_Background : Select the background color of the English character
-	 * Color_Foreground : Select the foreground color of the English character
-	 ********************************************************************************/
 	private final int ARRAY_LEN = 255;
 
-	public void GUI_DisNum(int Xpoint, int Ypoint, int nummber, Font font, Color Color_Background, Color Color_Foreground)
+	public void displayNumber(int pointX, int pointY, int nummber, Font font, Color backgroundColor, Color foregroundColor)
 			throws IOException {
 
-		int Num_Bit = 0, Str_Bit = 0;
-		byte Str_Array[] = new byte[ARRAY_LEN];
-		Str_Array[0] = 0;
-		byte Num_Array[] = new byte[ARRAY_LEN];
-		Str_Array[0] = 0;
+		int bitNumber = 0, bitString = 0;
+		byte arrayString[] = new byte[ARRAY_LEN];
+		arrayString[0] = 0;
+		byte arrayNumber[] = new byte[ARRAY_LEN];
+		arrayString[0] = 0;
 
-		if (Xpoint >= DISPLAY.lcdDisplayColumn || Ypoint >= DISPLAY.lcdDisplayPage) {
+		if (pointX >= DISPLAY.lcdDisplayColumn || pointY >= DISPLAY.lcdDisplayPage) {
 			return;
 		}
 
 		// Converts a number to a string
 		while (nummber > 0) {
-			Num_Array[Num_Bit] = (byte) ((nummber % 10) + '0');
-			Num_Bit++;
+			arrayNumber[bitNumber] = (byte) ((nummber % 10) + '0');
+			bitNumber++;
 			nummber /= 10;
 
 		}
 
 		// The string is inverted
-		while (Num_Bit > 0) {
-			Str_Array[Str_Bit] = Num_Array[Num_Bit - 1];
-			Str_Bit++;
-			Num_Bit--;
+		while (bitNumber > 0) {
+			arrayString[bitString] = arrayNumber[bitNumber - 1];
+			bitString++;
+			bitNumber--;
 		}
 
-		String toPass = new String(Num_Array, 0, Str_Bit);
+		String toPass = new String(arrayNumber, 0, bitString);
 		// show
-		GUI_DisString_EN(Xpoint, Ypoint, toPass, font, Color_Background, Color_Foreground);
+		displayString(pointX, pointY, toPass, font, backgroundColor, foregroundColor);
 	}
 
 //	void GUI_Disbitmap(int Xpoint, int Ypoint, const unsigned char *pBmp,
@@ -369,7 +307,7 @@ public class LcdGui {
 //	    }
 //	}
 
-	public void simpleDemo() throws IOException {
+	public void demo1() throws IOException {
 		while (true) {
 			DRIVER.clear(Color.BLACK);
 			DRIVER.clear(Color.BLUE);
@@ -387,31 +325,27 @@ public class LcdGui {
 		}
 	}
 	
-	public void multiDemo() throws IOException {
+	public void demo2() throws IOException {
 		Color randomColor = new Color((int)(Math.random() * (Integer.MAX_VALUE & 0xFFFFFF)));
 		int randomx = (int)(Math.random() * 50);
 		int randomy = (int)(Math.random() * 50);
 		DRIVER.setAreaColor(randomColor, 0 + randomx, 0 + randomy, 128 - randomx, 128 - randomy);
 	}
-	/********************************************************************************
-	 * function: LCD_Show parameter:
-	 * 
-	 * @throws IOException
-	 ********************************************************************************/
-	public void demo() throws IOException {
+
+	public void demo3() throws IOException {
 		DRIVER.clear(GUI_BACKGROUND);
 
 		System.out.printf("GUI Draw Line \r\n");
 
-		GUI_DrawLine(0, 10, DISPLAY.lcdDisplayColumn, 10, Color.RED, LineStyle.SOLID, DotPixel.DOT_PIXEL_2_2);
+		drawLine(0, 10, DISPLAY.lcdDisplayColumn, 10, Color.RED, LineStyle.SOLID, DotPixel.DOT_PIXEL_2_2);
 		// GUI_DrawLine(0, sLCD_DIS.LCD_Dis_Page - 10, sLCD_DIS.LCD_Dis_Column,
 		// sLCD_DIS.LCD_Dis_Page - 10, RED,LINE_SOLID, DOT_PIXEL_2X2);
-		GUI_DrawLine(0, 20, DISPLAY.lcdDisplayColumn, 20, Color.RED, LineStyle.DOTTED, DotPixel.DOT_PIXEL_1_1);
+		drawLine(0, 20, DISPLAY.lcdDisplayColumn, 20, Color.RED, LineStyle.DOTTED, DotPixel.DOT_PIXEL_1_1);
 		// GUI_DrawLine(0, sLCD_DIS.LCD_Dis_Page - 20, sLCD_DIS.LCD_Dis_Column,
 		// sLCD_DIS.LCD_Dis_Page - 20, RED,LINE_DOTTED, DOT_PIXEL_DFT);
 
 		System.out.printf("GUI Draw Rectangle \r\n");
-		GUI_DrawRectangle(0, 0, 128, 9, Color.BLUE, DrawFill.FILLED, DotPixel.DOT_PIXEL_1_1);
+		drawRectangle(0, 0, 128, 9, Color.BLUE, DrawFill.FILLED, DotPixel.DOT_PIXEL_1_1);
 		// GUI_DrawRectangle(1,1,128,128,RED,DRAW_EMPTY,DOT_PIXEL_2X2);
 
 		System.out.printf("GUI Draw Olympic Rings\r\n");
@@ -421,26 +355,34 @@ public class LcdGui {
 		int Cx4 = (Cx1 + Cx2) / 2, Cy4 = Cy1 + Cr;
 		int Cx5 = (Cx2 + Cx3) / 2, Cy5 = Cy1 + Cr;
 
-		GUI_DrawCircle(Cx1, Cy1, Cr, Color.BLUE, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
-		GUI_DrawCircle(Cx2, Cy2, Cr, Color.BLACK, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
-		GUI_DrawCircle(Cx3, Cy3, Cr, Color.RED, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
-		GUI_DrawCircle(Cx4, Cy4, Cr, Color.YELLOW, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
-		GUI_DrawCircle(Cx5, Cy5, Cr, Color.GREEN, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
+		drawCircle(Cx1, Cy1, Cr, Color.BLUE, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
+		drawCircle(Cx2, Cy2, Cr, Color.BLACK, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
+		drawCircle(Cx3, Cy3, Cr, Color.RED, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
+		drawCircle(Cx4, Cy4, Cr, Color.YELLOW, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
+		drawCircle(Cx5, Cy5, Cr, Color.GREEN, DrawFill.EMPTY, DotPixel.DOT_PIXEL_1_1);
 
 		System.out.printf("GUI Draw Realistic circles\r\n");
-		GUI_DrawCircle(15, 110, 10, Color.CYAN, DrawFill.FILLED, DotPixel.DOT_PIXEL_1_1);
-		GUI_DrawCircle(DISPLAY.lcdDisplayColumn - 15, 110, 10, Color.CYAN, DrawFill.FILLED, DotPixel.DOT_PIXEL_1_1);
+		drawCircle(15, 110, 10, Color.CYAN, DrawFill.FILLED, DotPixel.DOT_PIXEL_1_1);
+		drawCircle(DISPLAY.lcdDisplayColumn - 15, 110, 10, Color.CYAN, DrawFill.FILLED, DotPixel.DOT_PIXEL_1_1);
 
 		System.out.printf("GUI Display String \r\n");
-		GUI_DisString_EN(35, 20, "WaveShare", new Font12(), GUI_BACKGROUND, Color.BLUE);
-		GUI_DisString_EN(32, 33, "Electronic", new Font12(), GUI_BACKGROUND, Color.BLUE);
-		GUI_DisString_EN(28, 45, "1.44inch TFTLCD", new Font8(), Color.RED, Color.ORANGE);
+		displayString(35, 20, "WaveShare", new Font12(), GUI_BACKGROUND, Color.BLUE);
+		displayString(32, 33, "Electronic", new Font12(), GUI_BACKGROUND, Color.BLUE);
+		displayString(28, 45, "1.44inch TFTLCD", new Font8(), Color.RED, Color.ORANGE);
 
 		System.out.printf("GUI Display Nummber \r\n");
-		GUI_DisNum(28, 55, 1234567890, new Font12(), GUI_BACKGROUND, Color.BLUE);
+		displayNumber(28, 55, 1234567890, new Font12(), GUI_BACKGROUND, Color.BLUE);
 	}
 
 	public void flipBacklight() {
 		DRIVER.flipBacklight();
 	}
+	
+	private void GUI_Swop(int Point1, int Point2) {
+		int Temp;
+		Temp = Point1;
+		Point1 = Point2;
+		Point2 = Temp;
+	}
+	
 }

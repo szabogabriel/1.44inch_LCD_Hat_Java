@@ -51,7 +51,7 @@ public class Main {
 					try {
 						System.out.println("Calling demo.");
 						//lcdHat.demo();
-						lcdHat.demo();
+						lcdHat.demo3();
 						System.out.println("Done.");
 					} catch (IOException e) {
 						e.printStackTrace();

@@ -212,19 +212,11 @@ public class LcdDriver {
 	}
 	
 	private void writeData(char ... data) throws IOException {
-		writeDataDirect(data);
+		writeData(toByteArray(data));
 	}
 	
 	private void writeData(byte ... data) throws IOException {
-		writeDataDirect(data);
-	}
-	
-	private void writeDataDirect(byte ... data) throws IOException {
 		spiDevice.write(data);
-	}
-	
-	private void writeDataDirect(char ... data) throws IOException {
-		writeDataDirect(toByteArray(data));
 	}
 	
 	private byte[] toByteArray(char ... data) {
@@ -236,20 +228,20 @@ public class LcdDriver {
 		return ret;
 	}
 	
-	private void setWindows(int xStart, int yStart, int xEnd, int yEnd) throws IOException {
+	private void setWindows(int startX, int startY, int endX, int endY) throws IOException {
 		//set the X coordinates
 		writeRegister((byte)0x2A);
 		writeData(	(byte)0x00,
-					(byte)((xStart & 0xff) + DISPLAY.lcdXAdjust),
+					(byte)((startX & 0xff) + DISPLAY.lcdXAdjust),
 					(byte)0x00,
-					(byte)(((xEnd - 1) & 0xff) + DISPLAY.lcdXAdjust));
+					(byte)(((endX - 1) & 0xff) + DISPLAY.lcdXAdjust));
 
 		//set the Y coordinates
 		writeRegister((byte)0x2B);
 		writeData(	(byte)0x00,
-					(byte)((yStart & 0xff) + DISPLAY.lcdYAdjust),
+					(byte)((startY & 0xff) + DISPLAY.lcdYAdjust),
 					(byte)0x00,
-					(byte)(((yEnd - 1) & 0xff )+ DISPLAY.lcdYAdjust));
+					(byte)(((endY - 1) & 0xff )+ DISPLAY.lcdYAdjust));
 
 		writeRegister((byte)0x2C);
 	}
