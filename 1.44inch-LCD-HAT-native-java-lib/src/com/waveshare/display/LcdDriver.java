@@ -17,9 +17,9 @@ import com.waveshare.display.util.ColorUtil;
 
 public class LcdDriver {
 	
-	private static final int SPI_SPEED = 20000000;
-	private static final int LCD_WIDTH = 128;
-	private static final int LCD_HEIGHT = 128;
+	private static final int SPI_SPEED = 40000000;
+	protected static final int LCD_WIDTH = 128;
+	protected static final int LCD_HEIGHT = 128;
 	private static final int LCD_X = 2;
 	private static final int LCD_Y = 1;
 	
@@ -43,7 +43,7 @@ public class LcdDriver {
 		}
 	}
 	
-	private SpiDevice spiDevice;
+	protected SpiDevice spiDevice;
 	
 	public LcdDriver(GpioController gpio, Display display) throws IOException {
 		this(gpio, display, ScanDirection.U2D_R2L);
@@ -219,7 +219,7 @@ public class LcdDriver {
 		spiDevice.write(data);
 	}
 	
-	private byte[] toByteArray(short ... data) {
+	protected byte[] toByteArray(short ... data) {
 		byte[] ret = new byte[data.length * 2];
 		for (int i = 0; i < data.length; i++) {
 			ret[2 * i] = (byte)(data[i] >> 8);
