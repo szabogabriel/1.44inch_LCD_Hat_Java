@@ -1,6 +1,6 @@
 package com.waveshare.keyboard;
 
-import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinPullResistance;
@@ -9,9 +9,9 @@ import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.waveshare.listener.KeyInputListener;
 
-public class KeyboardHat {
-	
-	public static enum Keys {
+public class HatKeys implements Keyboard {
+
+	private enum KeyMapping {
 		KEY_A("Key A", RaspiPin.GPIO_29),
 		KEY_B("Key B", RaspiPin.GPIO_28),
 		KEY_C("Key C", RaspiPin.GPIO_27),
@@ -20,39 +20,52 @@ public class KeyboardHat {
 		JOYSTICK_LEFT("Joystick LEFT", RaspiPin.GPIO_21),
 		JOYSTICK_RIGHT("Joystick RIGHT", RaspiPin.GPIO_25),
 		JOYSTICK_CENTER("Joystick CENTER", RaspiPin.GPIO_23);
-		
+
+		static {
+			for (KeyMapping it : KeyMapping.values()) {
+
+				it.pin.addListener(new GpioPinListenerDigital() {
+					@Override
+					public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
+						if (it.listener != null) {
+							it.listener.keyStateChanged(event.getState());
+						}
+					}
+				});
+			}
+		}
+
 		private final String name;
 		private final Pin pinNumber;
 		private GpioPinDigitalInput pin = null;
 		private KeyInputListener listener = null;
-		
-		private Keys(String name, Pin pin) {
+
+		private KeyMapping(String name, Pin pin) {
 			this.name = name;
 			this.pinNumber = pin;
-		}
-	}
-	
-	public KeyboardHat(GpioController gpio) {
-		for (Keys it : Keys.values()) {
-			it.pin = gpio.provisionDigitalInputPin(it.pinNumber, it.name, PinPullResistance.PULL_UP);
-			it.pin.addListener(new GpioPinListenerDigital() {
+			
+			this.pin = GpioFactory.getInstance().provisionDigitalInputPin(pinNumber, name, PinPullResistance.PULL_UP);
+			
+			this.pin.addListener(new GpioPinListenerDigital() {
 	            @Override
 	            public void handleGpioPinDigitalStateChangeEvent(GpioPinDigitalStateChangeEvent event) {
-//	            	System.out.println(" --> " + it.name + " changed: " + event.getPin() + " = " + event.getState());
-	            	if (it.listener != null) {
-	            		it.listener.keyStateChanged(event.getState());
+	            	if (listener != null) {
+	            		listener.keyStateChanged(event.getState());
 	            	}
 	            }
 	        });
 		}
+
+		public GpioPinDigitalInput getPin() {
+			return pin;
+		}
 	}
-	
+
 	public void setListener(Keys key, KeyInputListener listener) {
-		key.listener = listener;
+		KeyMapping.values()[key.ordinal()].listener = listener;
 	}
-	
+
 	public void removeListener(Keys key) {
 		setListener(key, null);
 	}
-
 }

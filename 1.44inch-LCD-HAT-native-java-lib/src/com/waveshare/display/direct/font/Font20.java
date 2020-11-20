@@ -1,4 +1,4 @@
-package com.waveshare.display.font;
+package com.waveshare.display.direct.font;
 
 public class Font20 implements Font {
 	

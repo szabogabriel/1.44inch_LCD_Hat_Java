@@ -1,52 +1,19 @@
 package com.waveshare;
 
-import java.io.IOException;
-
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.PinState;
-import com.waveshare.display.BufferedLcdGui;
-import com.waveshare.display.Display;
-import com.waveshare.display.LcdGui;
-import com.waveshare.keyboard.KeyboardHat;
-import com.waveshare.listener.KeyInputListener;
+import com.waveshare.display.LcdDisplay;
+import com.waveshare.display.LcdFactory;
+import com.waveshare.keyboard.Keyboard;
+import com.waveshare.keyboard.KeyboardFactory;
 
 public class Hat {
 	
-	private static final GpioController GPIO_CONTROLLER = GpioFactory.getInstance();
-	public final static Hat INSTANCE = new Hat();
+	public LcdDisplay lcdHat;
+	public Keyboard keyboardHat;
 	
-//	public LcdGui lcdHat;
-	public BufferedLcdGui lcdHat;
-	public KeyboardHat keyboardHat;
-	
-	private Hat() {
-		lcdHat =  createBufferedLcdDriver();//createLcdGui();
-		keyboardHat = createKeyboardHat();
+	public Hat(KeyboardFactory keyboardFacotry, LcdFactory lcdFactory) {
+		lcdHat =  lcdFactory.createDisplay();
+		keyboardHat = keyboardFacotry.createKeyboard();
 	}
-	
-	private LcdGui createLcdGui() {
-		try {
-			return new LcdGui(GPIO_CONTROLLER);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	private BufferedLcdGui createBufferedLcdDriver() {
-		try {
-			return new BufferedLcdGui(GPIO_CONTROLLER, new Display());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	
-	private KeyboardHat createKeyboardHat() {
-		return new KeyboardHat(GPIO_CONTROLLER);
-	}
-	
 	
 	/*
 	 * Starting here is only the demo part of the library.
@@ -59,20 +26,20 @@ public class Hat {
 	}
 	
 	private static void addControllers() {		
-		INSTANCE.keyboardHat.setListener(KeyboardHat.Keys.KEY_A, new KeyInputListener() {
-			
-			@Override
-			public void keyStateChanged(PinState state) {
-				if (state.isLow()) {
-					try {
-						INSTANCE.lcdHat.demo3();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			}
-		});
+//		INSTANCE.keyboardHat.setListener(KeyboardHat.HatKeys.KEY_A, new KeyInputListener() {
+//			
+//			@Override
+//			public void keyStateChanged(PinState state) {
+//				if (state.isLow()) {
+//					try {
+//						INSTANCE.lcdHat.demo3();
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		});
 //		INSTANCE.keyboardHat.setListener(KeyboardHat.Keys.KEY_A, new KeyInputListener() {
 //			@Override
 //			public void keyStateChanged(PinState state) {

@@ -1,32 +1,68 @@
-package com.waveshare.display;
+package com.waveshare.display.direct;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
 import com.pi4j.io.gpio.GpioController;
-import com.waveshare.display.enums.DotPixel;
-import com.waveshare.display.enums.DotStyle;
-import com.waveshare.display.enums.DrawFill;
-import com.waveshare.display.enums.LineStyle;
-import com.waveshare.display.font.Font;
-import com.waveshare.display.font.Font12;
-import com.waveshare.display.font.Font8;
+import com.waveshare.display.LcdDisplay;
+import com.waveshare.display.LcdDriver;
+import com.waveshare.display.direct.enums.DotPixel;
+import com.waveshare.display.direct.enums.DotStyle;
+import com.waveshare.display.direct.enums.DrawFill;
+import com.waveshare.display.direct.enums.LineStyle;
+import com.waveshare.display.direct.font.Font;
+import com.waveshare.display.direct.font.Font12;
+import com.waveshare.display.direct.font.Font16;
+import com.waveshare.display.direct.font.Font20;
+import com.waveshare.display.direct.font.Font24;
+import com.waveshare.display.direct.font.Font8;
 import com.waveshare.display.util.ColorUtil;
 
-public class LcdGui {
+public class DirectLcdDisplay extends LcdDriver implements LcdDisplay {
 
 	private static Color GUI_BACKGROUND = Color.WHITE;
 	private static Color FONT_BACKGROUND = Color.WHITE;
+	
+	private Color backgroundColor = Color.WHITE;
 
-	private final Display DISPLAY;
-	private final LcdDriver DRIVER;
-
-	public LcdGui(GpioController controller) throws IOException {
-		this.DISPLAY = new Display();
-		this.DRIVER = new LcdDriver(controller, DISPLAY);
+	public DirectLcdDisplay(GpioController controller) throws IOException {
+		super(controller);
 	}
 
+	public void commit() {
+		//not needed
+	}
+	
+	public void clear() {
+		clear(false);
+	}
+	
+	public void clear(boolean keepBackground) {
+		if (keepBackground) {
+			//TODO
+		} else {
+			clear(backgroundColor);
+		}
+	}
+	
+	public void setBackground(Color color) {
+		backgroundColor = color;
+		clear(backgroundColor);
+	}
+	
+	public void setBackground(BufferedImage image) {
+		displayBitmap(image, 0, 0);
+	}
+	
+	public void drawPoint(int x, int y, Color color, int size) {
+		try {
+			drawPoint(x, y, color, DotPixel.values()[size % DotPixel.values().length], DotStyle.FILL_AROUND);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void drawPoint(int pointX, int pointY, Color color, DotPixel pixelWidth, DotStyle dotStyle) throws IOException {
 		if (pointX > DISPLAY.lcdDisplayColumn || pointY > DISPLAY.lcdDisplayPage) {
 			return;
@@ -36,19 +72,26 @@ public class LcdGui {
 		if (dotStyle == DotStyle.FILL_AROUND) {
 			for (XDir_Num = 0; XDir_Num < 2 * pixelWidth.value() - 1; XDir_Num++) {
 				for (YDir_Num = 0; YDir_Num < 2 * pixelWidth.value() - 1; YDir_Num++) {
-					DRIVER.setPointColor(color, pointX + XDir_Num - pixelWidth.value(),
+					setPointColor(color, pointX + XDir_Num - pixelWidth.value(),
 							pointY + YDir_Num - pixelWidth.value());
 				}
 			}
 		} else {
 			for (XDir_Num = 0; XDir_Num < pixelWidth.value(); XDir_Num++) {
 				for (YDir_Num = 0; YDir_Num < pixelWidth.value(); YDir_Num++) {
-					DRIVER.setPointColor(color, pointX + XDir_Num - 1, pointY + YDir_Num - 1);
+					setPointColor(color, pointX + XDir_Num - 1, pointY + YDir_Num - 1);
 				}
 			}
 		}
 	}
 
+	public void drawLine(int startX, int startY, int endX, int endY, Color color, int lineWidth) {
+		try {
+			drawLine(startX, startY, endX, endY, color, LineStyle.SOLID, DotPixel.values()[lineWidth % DotPixel.values().length]);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void drawLine(int startX, int startY, int endX, int endY, Color color, LineStyle lineStyle, DotPixel pixelWidth)
 			throws IOException {
@@ -100,7 +143,14 @@ public class LcdGui {
 			}
 		}
 	}
-
+	
+	public void drawRectangle(int startX, int startY, int endX, int endY, Color color, boolean filled, int pixelWidth) {
+		try {
+			drawRectangle(startX, startY, endX, endY, color, filled ? DrawFill.FILLED : DrawFill.EMPTY, DotPixel.values()[pixelWidth % DotPixel.values().length]);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public void drawRectangle(int startX, int startY, int endX, int endY, Color color, DrawFill filled, DotPixel pixelWidth)
 			throws IOException {
@@ -124,6 +174,14 @@ public class LcdGui {
 			drawLine(startX, startY, startX, endY, color, LineStyle.SOLID, pixelWidth);
 			drawLine(endX, endY, endX, startY, color, LineStyle.SOLID, pixelWidth);
 			drawLine(endX, endY, startX, endY, color, LineStyle.SOLID, pixelWidth);
+		}
+	}
+	
+	public void drawOval(int x, int y, int radius1, int radiu2, Color color, boolean filled, int pixelWidth) {
+		try {
+			drawCircle(x, y, radius1, color, filled ? DrawFill.FILLED : DrawFill.EMPTY, DotPixel.values()[pixelWidth % DotPixel.values().length]);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -228,10 +286,20 @@ public class LcdGui {
 		} /* Write all */
 	}
 
-	public void displayString(int startX, int startY, String text, Font font, Color backgroundColor,
-			Color foregroundColor) throws IOException {
+	public void displayString(String text, int startX, int startY, Color foregroundColor, int size) {
+		try {
 		int pointX = startX;
 		int pointY = startY;
+		
+		Font font;
+		switch (size) {
+		case 8 : font = new Font8(); break;
+		case 12 : font = new Font12(); break;
+		case 16 : font = new Font16(); break;
+		case 20 : font = new Font20(); break;
+		case 24 : font = new Font24(); break;
+		default : font = new Font12(); break;
+		}
 
 		if (startX >= DISPLAY.lcdDisplayColumn || startY >= DISPLAY.lcdDisplayPage) {
 			return;
@@ -258,6 +326,9 @@ public class LcdGui {
 
 			// The next word of the abscissa increases the font of the broadband
 			pointX += font.getWidth() + 1;
+		}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -293,30 +364,32 @@ public class LcdGui {
 
 		String toPass = new String(arrayNumber, 0, bitString);
 		// show
-		displayString(pointX, pointY, toPass, font, backgroundColor, foregroundColor);
+		displayString(toPass, pointX, pointY, foregroundColor, 12);
 	}
 
-	public void displayBitmap(int x, int y, BufferedImage image) {
+	@Override
+	public void displayBitmap(BufferedImage image, int x, int y) {
 		int width = image.getWidth();
 		int height = image.getHeight();
 		
 		try {
 			short [] buffer = new short[width];
-			DRIVER.setWindows(x, y, x + width, y + height);
+			setWindows(x, y, x + width, y + height);
 			for (int i = 0; i < height; i++) {
 				for (int j = 0; j < width; j++) {
 					buffer[j] = (short)(ColorUtil.convertRgb888To565(image.getRGB(j, i)));
 				}
-				DRIVER.writeData(buffer);
+				writeData(buffer);
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
+	@Override
 	public void clear(Color color) {
 		try {
-			DRIVER.clear(color);
+			super.clear(color);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -324,19 +397,19 @@ public class LcdGui {
 	
 	public void demo1() throws IOException {
 		while (true) {
-			DRIVER.clear(Color.BLACK);
-			DRIVER.clear(Color.BLUE);
-			DRIVER.clear(Color.CYAN);
-			DRIVER.clear(Color.DARK_GRAY);
-			DRIVER.clear(Color.GRAY);
-			DRIVER.clear(Color.GREEN);
-			DRIVER.clear(Color.LIGHT_GRAY);
-			DRIVER.clear(Color.MAGENTA);
-			DRIVER.clear(Color.ORANGE);
-			DRIVER.clear(Color.PINK);
-			DRIVER.clear(Color.RED);
-			DRIVER.clear(Color.WHITE);
-			DRIVER.clear(Color.YELLOW);
+			clear(Color.BLACK);
+			clear(Color.BLUE);
+			clear(Color.CYAN);
+			clear(Color.DARK_GRAY);
+			clear(Color.GRAY);
+			clear(Color.GREEN);
+			clear(Color.LIGHT_GRAY);
+			clear(Color.MAGENTA);
+			clear(Color.ORANGE);
+			clear(Color.PINK);
+			clear(Color.RED);
+			clear(Color.WHITE);
+			clear(Color.YELLOW);
 		}
 	}
 	
@@ -344,11 +417,11 @@ public class LcdGui {
 		Color randomColor = new Color((int)(Math.random() * (Integer.MAX_VALUE & 0xFFFFFF)));
 		int randomx = (int)(Math.random() * 50);
 		int randomy = (int)(Math.random() * 50);
-		DRIVER.setAreaColor(randomColor, 0 + randomx, 0 + randomy, 128 - randomx, 128 - randomy);
+		setAreaColor(randomColor, 0 + randomx, 0 + randomy, 128 - randomx, 128 - randomy);
 	}
 
 	public void demo3() throws IOException {
-		DRIVER.clear(GUI_BACKGROUND);
+		clear(GUI_BACKGROUND);
 
 		System.out.printf("GUI Draw Line \r\n");
 
@@ -381,16 +454,16 @@ public class LcdGui {
 		drawCircle(DISPLAY.lcdDisplayColumn - 15, 110, 10, Color.CYAN, DrawFill.FILLED, DotPixel.DOT_PIXEL_1_1);
 
 		System.out.printf("GUI Display String \r\n");
-		displayString(35, 20, "WaveShare", new Font12(), GUI_BACKGROUND, Color.BLUE);
-		displayString(32, 33, "Electronic", new Font12(), GUI_BACKGROUND, Color.BLUE);
-		displayString(28, 45, "1.44inch TFTLCD", new Font8(), Color.RED, Color.ORANGE);
+		displayString("WaveShare", 35, 20, Color.BLUE, 12);
+		displayString("Electronic", 32, 33, Color.BLUE, 12);
+		displayString("1.44inch TFTLCD", 28, 45, Color.ORANGE, 8);
 
 		System.out.printf("GUI Display Nummber \r\n");
 		displayNumber(28, 55, 1234567890, new Font12(), GUI_BACKGROUND, Color.BLUE);
 	}
 
 	public void flipBacklight() {
-		DRIVER.flipBacklight();
+		super.flipBacklight();
 	}
 	
 	private void GUI_Swop(int Point1, int Point2) {

@@ -12,18 +12,14 @@ import com.pi4j.io.spi.SpiChannel;
 import com.pi4j.io.spi.SpiDevice;
 import com.pi4j.io.spi.SpiFactory;
 import com.pi4j.io.spi.SpiMode;
-import com.waveshare.display.enums.ScanDirection;
+import com.waveshare.display.direct.enums.ScanDirection;
 import com.waveshare.display.util.ColorUtil;
 
 public class LcdDriver {
 	
 	private static final int SPI_SPEED = 40000000;
-	protected static final int LCD_WIDTH = 128;
-	protected static final int LCD_HEIGHT = 128;
-	private static final int LCD_X = 2;
-	private static final int LCD_Y = 1;
 	
-	private final Display DISPLAY;
+	protected final DisplayDetails DISPLAY;
 	
 	private enum Pins {
 		BACKLIGHT("Backlight", RaspiPin.GPIO_05, PinState.HIGH),
@@ -45,11 +41,11 @@ public class LcdDriver {
 	
 	protected SpiDevice spiDevice;
 	
-	public LcdDriver(GpioController gpio, Display display) throws IOException {
-		this(gpio, display, ScanDirection.U2D_R2L);
+	public LcdDriver(GpioController gpio) throws IOException {
+		this(gpio, new DisplayDetails(), ScanDirection.U2D_R2L);
 	}
 	
-	public LcdDriver(GpioController gpio, Display display, ScanDirection scanDirection) throws IOException {
+	public LcdDriver(GpioController gpio, DisplayDetails display, ScanDirection scanDirection) throws IOException {
 		this.DISPLAY = display;
 		for (Pins it : Pins.values()) {
 			it.pin = gpio.provisionDigitalOutputPin(it.pinNumber, it.name, it.state);
@@ -152,11 +148,11 @@ public class LcdDriver {
 	private void setupScanDirectionAndColorMode(ScanDirection scanDirection) throws IOException {
 	    //Get GRAM and LCD width and height
 	    if(scanDirection == ScanDirection.L2R_U2D || scanDirection == ScanDirection.L2R_D2U || scanDirection == ScanDirection.R2L_U2D || scanDirection == ScanDirection.R2L_D2U) {
-	    	DISPLAY.lcdDisplayColumn = LCD_HEIGHT;
-	    	DISPLAY.lcdDisplayPage = LCD_WIDTH;
+	    	DISPLAY.lcdDisplayColumn = DISPLAY.HEIGHT;
+	    	DISPLAY.lcdDisplayPage = DISPLAY.WIDTH;
 	    } else {
-	    	DISPLAY.lcdDisplayPage = LCD_HEIGHT;
-	    	DISPLAY.lcdDisplayColumn = LCD_WIDTH;
+	    	DISPLAY.lcdDisplayPage = DISPLAY.HEIGHT;
+	    	DISPLAY.lcdDisplayColumn = DISPLAY.WIDTH;
 	    }
 
 	    // Gets the scan direction of GRAM
@@ -190,11 +186,11 @@ public class LcdDriver {
 		
 		//please set (MemoryAccessReg_Data & 0x10) != 1
 		if ((memoryAccessRegisterData & 0x20) != 1) {
-			DISPLAY.lcdXAdjust = LCD_Y;
-			DISPLAY.lcdYAdjust = LCD_X;
+			DISPLAY.lcdXAdjust = DISPLAY.LCD_Y;
+			DISPLAY.lcdYAdjust = DISPLAY.LCD_X;
 		} else {
-			DISPLAY.lcdXAdjust = LCD_X;
-			DISPLAY.lcdYAdjust = LCD_Y;
+			DISPLAY.lcdXAdjust = DISPLAY.LCD_X;
+			DISPLAY.lcdYAdjust = DISPLAY.LCD_Y;
 		}
 		
 		//Set the read / write scan direction of the frame memory

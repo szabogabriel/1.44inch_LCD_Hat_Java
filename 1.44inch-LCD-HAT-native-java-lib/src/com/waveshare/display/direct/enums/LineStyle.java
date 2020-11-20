@@ -1,4 +1,4 @@
-package com.waveshare.display.enums;
+package com.waveshare.display.direct.enums;
 
 public enum LineStyle {
 	SOLID,
