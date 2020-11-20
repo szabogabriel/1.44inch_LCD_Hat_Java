@@ -13,6 +13,7 @@ import com.pi4j.io.spi.SpiDevice;
 import com.pi4j.io.spi.SpiFactory;
 import com.pi4j.io.spi.SpiMode;
 import com.waveshare.display.direct.enums.ScanDirection;
+import com.waveshare.display.util.ArrayUtil;
 import com.waveshare.display.util.ColorUtil;
 
 public class LcdDriver {
@@ -208,21 +209,14 @@ public class LcdDriver {
 	}
 	
 	public void writeData(short ... data) throws IOException {
-		writeData(toByteArray(data));
+		writeData(ArrayUtil.toByteArray(data));
 	}
 	
 	public void writeData(byte ... data) throws IOException {
 		spiDevice.write(data);
 	}
 	
-	protected byte[] toByteArray(short ... data) {
-		byte[] ret = new byte[data.length * 2];
-		for (int i = 0; i < data.length; i++) {
-			ret[2 * i] = (byte)(data[i] >> 8);
-			ret[(2 * i) + 1] = (byte)(data[i] & 0xFF);
-		}
-		return ret;
-	}
+
 	
 	public void setWindows(int startX, int startY, int endX, int endY) throws IOException {
 		//set the X coordinates
@@ -248,7 +242,7 @@ public class LcdDriver {
 	
 	private void setColor(Color color, int x, int y) throws IOException {
 		int size = Math.abs(x * y);
-		byte[] convertedColor = toByteArray((short)(ColorUtil.convertRgb888To565(color.getRGB())));
+		byte[] convertedColor = ArrayUtil.toByteArray((short)(ColorUtil.convertRgb888To565(color.getRGB())));
 		byte[] data = new byte[size * 2];
 		for (int i = 0; i < size; i++) {
 			data[i * 2] = convertedColor[0];
