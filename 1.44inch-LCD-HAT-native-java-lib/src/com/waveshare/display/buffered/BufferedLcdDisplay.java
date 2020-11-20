@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import com.pi4j.io.gpio.GpioController;
 import com.waveshare.display.LcdDisplay;
 import com.waveshare.display.LcdDriver;
 
@@ -26,9 +25,7 @@ public class BufferedLcdDisplay extends LcdDriver implements LcdDisplay {
 
 	private WriteTarget writeTarget;
 
-	public BufferedLcdDisplay(GpioController gpio) throws IOException {
-		super(gpio);
-
+	public BufferedLcdDisplay() throws IOException {
 		setWindows(0, 0, DISPLAY.WIDTH, DISPLAY.HEIGHT);
 
 		setBackground(backgroundColor);

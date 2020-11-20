@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.io.IOException;
 
 import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalOutput;
 import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
@@ -42,8 +43,8 @@ public class LcdDriver {
 	
 	protected SpiDevice spiDevice;
 	
-	public LcdDriver(GpioController gpio) throws IOException {
-		this(gpio, new DisplayDetails(), ScanDirection.U2D_R2L);
+	public LcdDriver() throws IOException {
+		this(GpioFactory.getInstance(), new DisplayDetails(), ScanDirection.U2D_R2L);
 	}
 	
 	public LcdDriver(GpioController gpio, DisplayDetails display, ScanDirection scanDirection) throws IOException {

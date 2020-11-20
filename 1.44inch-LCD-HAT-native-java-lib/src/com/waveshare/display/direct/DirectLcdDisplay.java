@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import com.pi4j.io.gpio.GpioController;
 import com.waveshare.display.LcdDisplay;
 import com.waveshare.display.LcdDriver;
 import com.waveshare.display.direct.enums.DotPixel;
@@ -26,8 +25,8 @@ public class DirectLcdDisplay extends LcdDriver implements LcdDisplay {
 	
 	private Color backgroundColor = Color.WHITE;
 
-	public DirectLcdDisplay(GpioController controller) throws IOException {
-		super(controller);
+	public DirectLcdDisplay() throws IOException {
+		
 	}
 
 	public void commit() {

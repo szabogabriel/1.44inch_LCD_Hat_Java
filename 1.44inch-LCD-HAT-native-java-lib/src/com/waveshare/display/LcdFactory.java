@@ -12,7 +12,7 @@ public enum LcdFactory {
 		@Override
 		public LcdDisplay createDisplay() {
 			try {
-				return new BufferedLcdDisplay(GpioFactory.getInstance());
+				return new BufferedLcdDisplay();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -23,7 +23,7 @@ public enum LcdFactory {
 		@Override
 		public LcdDisplay createDisplay() {
 			try {
-				return new DirectLcdDisplay(GpioFactory.getInstance());
+				return new DirectLcdDisplay();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
