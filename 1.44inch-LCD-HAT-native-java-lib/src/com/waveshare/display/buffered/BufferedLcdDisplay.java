@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import javax.swing.JComponent;
+
 import com.waveshare.display.LcdDisplay;
 
 public class BufferedLcdDisplay implements LcdDisplay {
@@ -137,6 +139,11 @@ public class BufferedLcdDisplay implements LcdDisplay {
 			setBackground(backgroundColor);
 		}
 	}
+	
+	@Override
+	public void print(JComponent component) {
+		component.printAll(currentBufferedImage.createGraphics());
+	}
 
 	public void clear(Color color) {
 		backgroundColor = color;
@@ -207,4 +214,5 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		System.out.println("(" + (t2 - t1) + "ms.)");
 		commit();
 	}
+
 }

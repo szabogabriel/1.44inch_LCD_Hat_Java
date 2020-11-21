@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
 
+import javax.swing.JComponent;
+
 public interface LcdDisplay {
 	
 	void setBackground(Color color);
@@ -24,6 +26,8 @@ public interface LcdDisplay {
 	
 	void clear();
 	void clear(boolean keepBackground);
+	
+	void print(JComponent component);
 	
 	void commit();
 

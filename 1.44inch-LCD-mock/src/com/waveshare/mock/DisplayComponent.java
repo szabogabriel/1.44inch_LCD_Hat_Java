@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import com.waveshare.display.LcdDisplay;
@@ -78,6 +79,11 @@ public class DisplayComponent extends JPanel implements LcdDisplay,  WriteTarget
 	public void write(BufferedImage image) {
 		lastImage = image;
 		repaint();
+	}
+	
+	@Override
+	public void print(JComponent component) {
+		lcdDisplay.print(component);
 	}
 	
 	@Override

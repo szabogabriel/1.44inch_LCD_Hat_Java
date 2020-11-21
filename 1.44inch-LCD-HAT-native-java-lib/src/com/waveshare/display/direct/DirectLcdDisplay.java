@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import javax.swing.JComponent;
+
 import com.waveshare.display.LcdDisplay;
 import com.waveshare.display.LcdDriver;
 import com.waveshare.display.direct.enums.DotPixel;
@@ -471,6 +473,11 @@ public class DirectLcdDisplay extends LcdDriver implements LcdDisplay {
 		Temp = Point1;
 		Point1 = Point2;
 		Point2 = Temp;
+	}
+
+	@Override
+	public void print(JComponent component) {
+		// TODO Auto-generated method stub
 	}
 	
 }
