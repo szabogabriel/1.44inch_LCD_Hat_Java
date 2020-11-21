@@ -2,12 +2,12 @@ package com.waveshare;
 
 import java.io.IOException;
 
-import com.pi4j.io.gpio.PinState;
 import com.waveshare.display.LcdFactories;
 import com.waveshare.display.buffered.BufferedLcdDisplay;
+import com.waveshare.keyboard.KeyState;
 import com.waveshare.keyboard.KeyboardFactories;
 import com.waveshare.keyboard.Keys;
-import com.waveshare.listener.KeyInputListener;
+import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class Demo {
 	
@@ -25,8 +25,8 @@ public class Demo {
 		hat.keyboardHat.setListener(Keys.KEY_A, new KeyInputListener() {
 			
 			@Override
-			public void keyStateChanged(PinState state) {
-				if (state.isLow()) {
+			public void keyStateChanged(KeyState state) {
+				if (state == KeyState.PRESSED) {
 					try {
 						((BufferedLcdDisplay)hat.lcdHat).demo3();
 					} catch (IOException e) {

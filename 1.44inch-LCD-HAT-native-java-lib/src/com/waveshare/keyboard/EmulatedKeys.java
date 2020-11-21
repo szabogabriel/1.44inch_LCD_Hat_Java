@@ -1,6 +1,8 @@
 package com.waveshare.keyboard;
 
-import com.waveshare.listener.KeyInputListener;
+import java.util.Optional;
+
+import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class EmulatedKeys implements Keyboard {
 	
@@ -16,8 +18,8 @@ public class EmulatedKeys implements Keyboard {
 		setListener(key, null);
 	}
 	
-	public KeyInputListener getListener(Keys key) {
-		return listeners[key.ordinal()];
+	public Optional<KeyInputListener> getListener(Keys key) {
+		return listeners[key.ordinal()] == null ? Optional.empty() : Optional.of(listeners[key.ordinal()]); 
 	}
 
 }

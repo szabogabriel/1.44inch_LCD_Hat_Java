@@ -1,6 +1,6 @@
 package com.waveshare.keyboard;
 
-import com.waveshare.listener.KeyInputListener;
+import com.waveshare.keyboard.listener.KeyInputListener;
 
 public interface Keyboard {
 	
