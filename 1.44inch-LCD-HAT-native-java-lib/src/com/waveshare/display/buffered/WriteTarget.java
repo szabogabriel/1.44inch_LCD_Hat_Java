@@ -6,7 +6,7 @@ public interface WriteTarget {
 	
 	void write(BufferedImage image);
 	
-	int getWidth();
-	int getHeight();
+	int getLcdWidth();
+	int getLcdHeight();
 
 }

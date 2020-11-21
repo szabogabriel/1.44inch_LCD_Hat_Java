@@ -12,18 +12,17 @@ public class SpiWriteTarget extends LcdDriver implements WriteTarget  {
 	
 	private short[] currentBuffer;
 	
-	private LcdDriver driver;
-	
 	private final int maxLength = SpiDevice.MAX_SUPPORTED_BYTES;
 	private byte [] data;
 	private int leftover;
 	private byte [][] buffer;
 	
 	public SpiWriteTarget() throws IOException {
+		currentBuffer = new short[DISPLAY.WIDTH * DISPLAY.HEIGHT];
 		leftover = (DISPLAY.WIDTH * DISPLAY.HEIGHT * 2) % maxLength;
 		buffer = new byte [((DISPLAY.WIDTH * DISPLAY.HEIGHT * 2) / maxLength) + (leftover > 0 ? 1 : 0)][maxLength];
 		
-		setWindows(0, 0, getWidth(), getHeight());
+		setWindows(0, 0, getLcdWidth(), getLcdHeight());
 	}
 	
 	private void fillBuffer(BufferedImage currentBufferedImage) {
@@ -45,7 +44,7 @@ public class SpiWriteTarget extends LcdDriver implements WriteTarget  {
 
 		for (int i = 0; i < buffer.length; i++) {
 			try {
-				driver.writeData(buffer[i]);
+				writeData(buffer[i]);
 			} catch (IOException e) {
 				e.printStackTrace();
 				return;
@@ -54,12 +53,12 @@ public class SpiWriteTarget extends LcdDriver implements WriteTarget  {
 	}
 
 	@Override
-	public int getWidth() {
+	public int getLcdWidth() {
 		return DISPLAY.WIDTH;
 	}
 
 	@Override
-	public int getHeight() {
+	public int getLcdHeight() {
 		return DISPLAY.HEIGHT;
 	}
 
