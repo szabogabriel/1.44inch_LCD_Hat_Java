@@ -1,7 +1,9 @@
-package com.waveshare.keyboard;
+package com.waveshare.keyboard.emulated;
 
 import java.util.Optional;
 
+import com.waveshare.keyboard.Keyboard;
+import com.waveshare.keyboard.Keys;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class EmulatedKeys implements Keyboard {

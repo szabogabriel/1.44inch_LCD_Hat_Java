@@ -1,4 +1,4 @@
-package com.waveshare.keyboard;
+package com.waveshare.keyboard.hat;
 
 import com.pi4j.io.gpio.GpioFactory;
 import com.pi4j.io.gpio.GpioPinDigitalInput;
@@ -7,6 +7,9 @@ import com.pi4j.io.gpio.PinPullResistance;
 import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
+import com.waveshare.keyboard.KeyState;
+import com.waveshare.keyboard.Keyboard;
+import com.waveshare.keyboard.Keys;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class HatKeys implements Keyboard {
