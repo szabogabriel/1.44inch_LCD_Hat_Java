@@ -1,6 +1,7 @@
 package com.waveshare.mock;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -49,8 +50,8 @@ public class DisplayComponent extends JPanel implements LcdDisplay,  WriteTarget
 	}
 
 	@Override
-	public void displayString(String toDisplay, int x, int y, Color fontColor, int stringSize) {
-		lcdDisplay.displayString(toDisplay, x, y, fontColor, stringSize);
+	public void displayString(String toDisplay, int x, int y, Color fontColor, Font font) {
+		lcdDisplay.displayString(toDisplay, x, y, fontColor, font);
 	}
 
 	@Override
