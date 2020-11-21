@@ -1,4 +1,4 @@
-package com.waveshare.keyboard.emulated;
+package com.waveshare.mock;
 
 import java.util.Optional;
 

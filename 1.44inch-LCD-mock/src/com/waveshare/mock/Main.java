@@ -6,7 +6,6 @@ import java.io.IOException;
 import com.waveshare.Hat;
 import com.waveshare.display.LcdDisplay;
 import com.waveshare.keyboard.Keys;
-import com.waveshare.keyboard.emulated.EmulatedKeys;
 
 public class Main {
 	

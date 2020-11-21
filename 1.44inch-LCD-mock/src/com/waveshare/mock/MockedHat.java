@@ -12,7 +12,6 @@ import javax.swing.SwingUtilities;
 import com.waveshare.display.LcdDisplay;
 import com.waveshare.keyboard.KeyState;
 import com.waveshare.keyboard.Keys;
-import com.waveshare.keyboard.emulated.EmulatedKeys;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class MockedHat extends JFrame {
