@@ -10,7 +10,12 @@ public enum LcdFactory {
 	BUFFERED {
 		@Override
 		public LcdDisplay createDisplay() {
-			return new BufferedLcdDisplay();
+			try {
+				return new BufferedLcdDisplay();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
 		}
 	},
 	DIRECT {

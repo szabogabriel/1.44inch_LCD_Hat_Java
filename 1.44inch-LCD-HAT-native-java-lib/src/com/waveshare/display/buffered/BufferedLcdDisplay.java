@@ -22,12 +22,12 @@ public class BufferedLcdDisplay implements LcdDisplay {
 
 	private WriteTarget writeTarget = null;
 
-	public BufferedLcdDisplay() {
-		try {
-			setWriteTarget(new SpiWriteTarget());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public BufferedLcdDisplay() throws IOException {
+		this(new SpiWriteTarget());
+	}
+
+	public BufferedLcdDisplay(WriteTarget writeTarget) {
+		setWriteTarget(writeTarget);
 		
 		currentBackground = new BufferedImage(writeTarget.getWidth(), writeTarget.getHeight(), BufferedImage.TYPE_INT_RGB);
 		currentBufferedImage = new BufferedImage(writeTarget.getWidth(), writeTarget.getHeight(), BufferedImage.TYPE_INT_RGB);
