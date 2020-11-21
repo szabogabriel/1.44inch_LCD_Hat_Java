@@ -1,6 +1,7 @@
 package com.waveshare.display.buffered;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -106,22 +107,14 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		}
 	}
 
-	public void displayCharacter(int x, int y, char character, Color fontColor) {
-		displayCharArray(x, y, new char[] { character }, fontColor);
-	}
-
 	@Override
-	public void displayString(String text, int x, int y, Color fontColor, int stringSize) {
-		displayCharArray(x, y, text.toCharArray(), fontColor);
+	public void displayString(String text, int x, int y, Color fontColor, Font font) {
+		displayCharArray(x, y, text.toCharArray(), fontColor, font);
 	}
 
-	public void displayNumber(int x, int y, int number, Color fontColor) {
-		displayCharArray(x, y, Integer.toString(number).toCharArray(), fontColor);
-
-	}
-
-	public void displayCharArray(int x, int y, char[] toShow, Color fontColor) {
+	public void displayCharArray(int x, int y, char[] toShow, Color fontColor, Font font) {
 		Graphics2D g = currentBufferedImage.createGraphics();
+		g.setFont(font);
 		g.setColor(fontColor);
 		g.drawChars(toShow, 0, toShow.length, x, y);
 	}
@@ -206,16 +199,10 @@ public class BufferedLcdDisplay implements LcdDisplay {
 
 		System.out.print("GUI Display String ");
 		t1 = System.currentTimeMillis();
-		displayString("WaveShare", 35, 20, Color.BLUE, 0);
-		displayString("Electronic", 32, 33, Color.BLUE, 0);
-		displayString("1.44inch TFTLCD", 28, 45, Color.ORANGE, 0);
-		t2 = System.currentTimeMillis();
-		System.out.println("(" + (t2 - t1) + "ms.)");
-		commit();
-
-		System.out.print("GUI Display Nummber ");
-		t1 = System.currentTimeMillis();
-		displayNumber(28, 55, 1234567890, Color.BLUE);
+		
+		displayString("WaveShare", 35, 20, Color.BLUE, currentBufferedImage.createGraphics().getFont());
+		displayString("Electronic", 32, 33, Color.BLUE, currentBufferedImage.createGraphics().getFont());
+		displayString("1.44inch TFTLCD", 28, 45, Color.ORANGE, currentBufferedImage.createGraphics().getFont());
 		t2 = System.currentTimeMillis();
 		System.out.println("(" + (t2 - t1) + "ms.)");
 		commit();

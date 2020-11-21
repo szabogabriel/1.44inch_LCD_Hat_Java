@@ -1,6 +1,7 @@
 package com.waveshare.display;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 
 public interface LcdDisplay {
@@ -17,7 +18,7 @@ public interface LcdDisplay {
 	
 	void drawOval(int x, int y, int radius1, int radiu2, Color color, boolean filled, int pixelWidth);
 	
-	void displayString(String toDisplay, int x, int y, Color fontColor, int stringSize);
+	void displayString(String toDisplay, int x, int y, Color fontColor, Font font);
 	
 	void displayBitmap(BufferedImage image, int x, int y);
 	

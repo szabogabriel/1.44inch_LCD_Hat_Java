@@ -285,13 +285,14 @@ public class DirectLcdDisplay extends LcdDriver implements LcdDisplay {
 		} /* Write all */
 	}
 
-	public void displayString(String text, int startX, int startY, Color foregroundColor, int size) {
+	@Override
+	public void displayString(String text, int startX, int startY, Color foregroundColor, java.awt.Font textfont) {
 		try {
 		int pointX = startX;
 		int pointY = startY;
 		
 		Font font;
-		switch (size) {
+		switch (textfont.getSize()) {
 		case 8 : font = new Font8(); break;
 		case 12 : font = new Font12(); break;
 		case 16 : font = new Font16(); break;
@@ -363,7 +364,7 @@ public class DirectLcdDisplay extends LcdDriver implements LcdDisplay {
 
 		String toPass = new String(arrayNumber, 0, bitString);
 		// show
-		displayString(toPass, pointX, pointY, foregroundColor, 12);
+		displayString(toPass, pointX, pointY, foregroundColor, new java.awt.Font("Verdana", java.awt.Font.PLAIN, 12));
 	}
 
 	@Override
@@ -453,9 +454,9 @@ public class DirectLcdDisplay extends LcdDriver implements LcdDisplay {
 		drawCircle(DISPLAY.lcdDisplayColumn - 15, 110, 10, Color.CYAN, DrawFill.FILLED, DotPixel.DOT_PIXEL_1_1);
 
 		System.out.printf("GUI Display String \r\n");
-		displayString("WaveShare", 35, 20, Color.BLUE, 12);
-		displayString("Electronic", 32, 33, Color.BLUE, 12);
-		displayString("1.44inch TFTLCD", 28, 45, Color.ORANGE, 8);
+		displayString("WaveShare", 35, 20, Color.BLUE, new java.awt.Font("Verdana", java.awt.Font.PLAIN, 12));
+		displayString("Electronic", 32, 33, Color.BLUE, new java.awt.Font("Verdana", java.awt.Font.PLAIN, 12));
+		displayString("1.44inch TFTLCD", 28, 45, Color.ORANGE, new java.awt.Font("Verdana", java.awt.Font.PLAIN, 8));
 
 		System.out.printf("GUI Display Nummber \r\n");
 		displayNumber(28, 55, 1234567890, new Font12(), GUI_BACKGROUND, Color.BLUE);
