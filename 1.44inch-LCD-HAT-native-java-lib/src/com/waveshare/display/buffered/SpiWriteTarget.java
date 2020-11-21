@@ -8,11 +8,8 @@ import com.waveshare.display.LcdDriver;
 import com.waveshare.display.util.ArrayUtil;
 import com.waveshare.display.util.ColorUtil;
 
-public class SpiWriteTarget implements WriteTarget {
+public class SpiWriteTarget extends LcdDriver implements WriteTarget  {
 	
-	private final int WIDTH;
-	private final int HEIGHT;
-
 	private short[] currentBuffer;
 	
 	private LcdDriver driver;
@@ -22,18 +19,17 @@ public class SpiWriteTarget implements WriteTarget {
 	private int leftover;
 	private byte [][] buffer;
 	
-	public SpiWriteTarget(LcdDriver driver, int w, int h) {
-		this.driver = driver;
-		WIDTH = w;
-		HEIGHT = h;
-		leftover = (WIDTH * HEIGHT * 2) % maxLength;
-		buffer = new byte [((WIDTH * HEIGHT * 2) / maxLength) + (leftover > 0 ? 1 : 0)][maxLength];
+	public SpiWriteTarget() throws IOException {
+		leftover = (DISPLAY.WIDTH * DISPLAY.HEIGHT * 2) % maxLength;
+		buffer = new byte [((DISPLAY.WIDTH * DISPLAY.HEIGHT * 2) / maxLength) + (leftover > 0 ? 1 : 0)][maxLength];
+		
+		setWindows(0, 0, getWidth(), getHeight());
 	}
 	
 	private void fillBuffer(BufferedImage currentBufferedImage) {
-		for (int i = 0; i < WIDTH; i++) {
-			for (int j = 0; j < HEIGHT; j++) {
-				currentBuffer[(j * WIDTH) + i] = (short)ColorUtil.convertRgb888To565(currentBufferedImage.getRGB(i, j));
+		for (int i = 0; i < DISPLAY.WIDTH; i++) {
+			for (int j = 0; j < DISPLAY.HEIGHT; j++) {
+				currentBuffer[(j * DISPLAY.WIDTH) + i] = (short)ColorUtil.convertRgb888To565(currentBufferedImage.getRGB(i, j));
 			}
 		}
 	}
@@ -55,6 +51,16 @@ public class SpiWriteTarget implements WriteTarget {
 				return;
 			}
 		}		
+	}
+
+	@Override
+	public int getWidth() {
+		return DISPLAY.WIDTH;
+	}
+
+	@Override
+	public int getHeight() {
+		return DISPLAY.HEIGHT;
 	}
 
 }

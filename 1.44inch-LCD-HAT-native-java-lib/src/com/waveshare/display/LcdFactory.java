@@ -2,7 +2,6 @@ package com.waveshare.display;
 
 import java.io.IOException;
 
-import com.pi4j.io.gpio.GpioFactory;
 import com.waveshare.display.buffered.BufferedLcdDisplay;
 import com.waveshare.display.direct.DirectLcdDisplay;
 
@@ -11,12 +10,7 @@ public enum LcdFactory {
 	BUFFERED {
 		@Override
 		public LcdDisplay createDisplay() {
-			try {
-				return new BufferedLcdDisplay();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			return null;
+			return new BufferedLcdDisplay();
 		}
 	},
 	DIRECT {

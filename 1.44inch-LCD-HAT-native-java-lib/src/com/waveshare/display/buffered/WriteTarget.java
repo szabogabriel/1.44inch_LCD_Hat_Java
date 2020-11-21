@@ -5,5 +5,8 @@ import java.awt.image.BufferedImage;
 public interface WriteTarget {
 	
 	void write(BufferedImage image);
+	
+	int getWidth();
+	int getHeight();
 
 }

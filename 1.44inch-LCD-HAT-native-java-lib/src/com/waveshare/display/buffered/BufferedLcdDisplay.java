@@ -8,9 +8,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import com.waveshare.display.LcdDisplay;
-import com.waveshare.display.LcdDriver;
 
-public class BufferedLcdDisplay extends LcdDriver implements LcdDisplay {
+public class BufferedLcdDisplay implements LcdDisplay {
 
 	private static final int BUFFER_PAGE_AMOUNT = 1;
 
@@ -18,19 +17,22 @@ public class BufferedLcdDisplay extends LcdDriver implements LcdDisplay {
 
 	private Color backgroundColor = Color.BLACK;
 
-	private BufferedImage currentBackground = new BufferedImage(DISPLAY.WIDTH, DISPLAY.HEIGHT,
-			BufferedImage.TYPE_INT_RGB);
-	private BufferedImage currentBufferedImage = new BufferedImage(DISPLAY.WIDTH, DISPLAY.HEIGHT,
-			BufferedImage.TYPE_INT_RGB);
+	private BufferedImage currentBackground;
+	private BufferedImage currentBufferedImage;
 
-	private WriteTarget writeTarget;
+	private WriteTarget writeTarget = null;
 
-	public BufferedLcdDisplay() throws IOException {
-		setWindows(0, 0, DISPLAY.WIDTH, DISPLAY.HEIGHT);
-
+	public BufferedLcdDisplay() {
+		try {
+			setWriteTarget(new SpiWriteTarget());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		currentBackground = new BufferedImage(writeTarget.getWidth(), writeTarget.getHeight(), BufferedImage.TYPE_INT_RGB);
+		currentBufferedImage = new BufferedImage(writeTarget.getWidth(), writeTarget.getHeight(), BufferedImage.TYPE_INT_RGB);
+		
 		setBackground(backgroundColor);
-
-		setWindows(0, 0, DISPLAY.WIDTH, DISPLAY.HEIGHT);
 
 		createDataWriterThread();
 	}
@@ -43,15 +45,11 @@ public class BufferedLcdDisplay extends LcdDriver implements LcdDisplay {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				long t1, t2;
 				while (true) {
 					try {
-						t1 = System.currentTimeMillis();
-
-						writeTarget.write(bufferHolder.take());
-
-						t2 = System.currentTimeMillis();
-						System.out.println("Rendered in: " + (t2 - t1) + "ms.");
+						if (writeTarget != null) {
+							writeTarget.write(bufferHolder.take());
+						}
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -64,14 +62,14 @@ public class BufferedLcdDisplay extends LcdDriver implements LcdDisplay {
 	public void setBackground(Color color) {
 		backgroundColor = color;
 		currentBackground.createGraphics().setColor(color);
-		currentBackground.createGraphics().fillRect(0, 0, DISPLAY.WIDTH, DISPLAY.HEIGHT);
-		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, DISPLAY.WIDTH, DISPLAY.HEIGHT, null);
+		currentBackground.createGraphics().fillRect(0, 0, writeTarget.getWidth(), writeTarget.getHeight());
+		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, writeTarget.getWidth(), writeTarget.getHeight(), null);
 	}
 
 	@Override
 	public void setBackground(BufferedImage image) {
 		currentBackground = image;
-		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, DISPLAY.WIDTH, DISPLAY.HEIGHT, null);
+		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, writeTarget.getWidth(), writeTarget.getHeight(), null);
 	}
 
 	@Override
@@ -149,7 +147,6 @@ public class BufferedLcdDisplay extends LcdDriver implements LcdDisplay {
 		}
 	}
 
-	@Override
 	public void clear(Color color) {
 		backgroundColor = color;
 		clear(false);
@@ -166,10 +163,10 @@ public class BufferedLcdDisplay extends LcdDriver implements LcdDisplay {
 		t1 = System.currentTimeMillis();
 		System.out.print("GUI Draw Line ");
 
-		drawLine(0, 10, DISPLAY.WIDTH, 10, Color.RED, 1);// 2
+		drawLine(0, 10, writeTarget.getWidth(), 10, Color.RED, 1);// 2
 		// GUI_DrawLine(0, sLCD_DIS.LCD_Dis_Page - 10, sLCD_DIS.LCD_Dis_Column,
 		// sLCD_DIS.LCD_Dis_Page - 10, RED,LINE_SOLID, DOT_PIXEL_2X2);
-		drawLine(0, 20, DISPLAY.WIDTH, 20, Color.RED, 1);// 1
+		drawLine(0, 20, writeTarget.getWidth(), 20, Color.RED, 1);// 1
 		// GUI_DrawLine(0, sLCD_DIS.LCD_Dis_Page - 20, sLCD_DIS.LCD_Dis_Column,
 		// sLCD_DIS.LCD_Dis_Page - 20, RED,LINE_DOTTED, DOT_PIXEL_DFT);
 		t2 = System.currentTimeMillis();
@@ -204,7 +201,7 @@ public class BufferedLcdDisplay extends LcdDriver implements LcdDisplay {
 		System.out.print("GUI Draw Realistic circles ");
 		t1 = System.currentTimeMillis();
 		drawOval(15, 110, 10, 10, Color.CYAN, true, 1);
-		drawOval(DISPLAY.WIDTH - 15, 110, 10, 10, Color.CYAN, true, 1);
+		drawOval(writeTarget.getWidth() - 15, 110, 10, 10, Color.CYAN, true, 1);
 		t2 = System.currentTimeMillis();
 		System.out.println("(" + (t2 - t1) + "ms.)");
 		commit();
