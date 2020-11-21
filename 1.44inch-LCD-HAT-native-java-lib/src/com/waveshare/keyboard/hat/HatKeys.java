@@ -8,11 +8,11 @@ import com.pi4j.io.gpio.RaspiPin;
 import com.pi4j.io.gpio.event.GpioPinDigitalStateChangeEvent;
 import com.pi4j.io.gpio.event.GpioPinListenerDigital;
 import com.waveshare.keyboard.KeyState;
-import com.waveshare.keyboard.Keyboard;
+import com.waveshare.keyboard.HatKeyboard;
 import com.waveshare.keyboard.Keys;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
-public class HatKeys implements Keyboard {
+public class HatKeys implements HatKeyboard {
 
 	private enum KeyMapping {
 		KEY_A("Key A", RaspiPin.GPIO_29),

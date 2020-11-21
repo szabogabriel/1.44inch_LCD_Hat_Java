@@ -6,7 +6,7 @@ public enum KeyboardFactories implements KeyboardFactory {
 	
 	HARDWARE {
 		@Override
-		public Keyboard createKeyboard() {
+		public HatKeyboard createKeyboard() {
 			return new HatKeys();
 		}
 	},

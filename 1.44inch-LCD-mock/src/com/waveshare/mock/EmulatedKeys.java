@@ -2,11 +2,11 @@ package com.waveshare.mock;
 
 import java.util.Optional;
 
-import com.waveshare.keyboard.Keyboard;
+import com.waveshare.keyboard.HatKeyboard;
 import com.waveshare.keyboard.Keys;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
-public class EmulatedKeys implements Keyboard {
+public class EmulatedKeys implements HatKeyboard {
 	
 	private KeyInputListener [] listeners = new KeyInputListener [Keys.values().length];
 
