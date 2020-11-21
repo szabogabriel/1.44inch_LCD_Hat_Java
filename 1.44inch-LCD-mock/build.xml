@@ -1,4 +1,4 @@
-<project name="1.44inch-LCD-HAT-native-java-lib" basedir="." default="package">
+<project name="1.44inch-LCD-HAT-emulation" basedir="." default="package">
 	
 	<property name="version" value="0.2.0_SNAPSHOT"/>
 	
@@ -6,18 +6,14 @@
 	<property name="dir.bin" value="${basedir}/bin"/>
 	<property name="dir.lib" value="${basedir}/lib"/>
 	
-	<property name="file.jar" value="${basedir}/release/lcd.java-${version}.jar"/>
+	<property name="file.jar" value="${basedir}/release/lcd.emulator-${version}.jar"/>
 	
 	<target name="clean" unless="skip.clean">
 		<delete file="${file.jar}" quiet="true"/>
 	</target>
 		
 	<target name="compile" depends="clean" unless="skip.compile">
-		<javac srcdir="${dir.src}" destdir="${dir.bin}" source="1.8">
-			<classpath>
-				<fileset dir="${dir.lib}" includes="*.jar"/>
-			</classpath>
-		</javac>
+		<javac srcdir="${dir.src}" destdir="${dir.bin}" source="1.8" />
 	</target>
 		
 	<target name="package" depends="compile" unless="skip.package">
