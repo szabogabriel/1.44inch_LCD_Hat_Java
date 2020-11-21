@@ -44,7 +44,7 @@ public class HatKeys implements Keyboard {
 			this.name = name;
 			this.pinNumber = pin;
 			
-			this.pin = GpioFactory.getInstance().provisionDigitalInputPin(pinNumber, name, PinPullResistance.PULL_UP);
+			this.pin = GpioFactory.getInstance().provisionDigitalInputPin(pinNumber, this.name, PinPullResistance.PULL_UP);
 			
 			this.pin.addListener(new GpioPinListenerDigital() {
 	            @Override
@@ -54,10 +54,6 @@ public class HatKeys implements Keyboard {
 	            	}
 	            }
 	        });
-		}
-
-		public GpioPinDigitalInput getPin() {
-			return pin;
 		}
 	}
 

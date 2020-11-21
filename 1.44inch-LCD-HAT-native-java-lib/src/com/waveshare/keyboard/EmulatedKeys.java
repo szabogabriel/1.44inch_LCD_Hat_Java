@@ -15,5 +15,9 @@ public class EmulatedKeys implements Keyboard {
 	public void removeListener(Keys key) {
 		setListener(key, null);
 	}
+	
+	public KeyInputListener getListener(Keys key) {
+		return listeners[key.ordinal()];
+	}
 
 }

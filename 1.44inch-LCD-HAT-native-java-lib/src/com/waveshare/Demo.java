@@ -3,9 +3,9 @@ package com.waveshare;
 import java.io.IOException;
 
 import com.pi4j.io.gpio.PinState;
-import com.waveshare.display.LcdFactory;
+import com.waveshare.display.LcdFactories;
 import com.waveshare.display.buffered.BufferedLcdDisplay;
-import com.waveshare.keyboard.KeyboardFactory;
+import com.waveshare.keyboard.KeyboardFactories;
 import com.waveshare.keyboard.Keys;
 import com.waveshare.listener.KeyInputListener;
 
@@ -14,7 +14,7 @@ public class Demo {
 	private static Hat hat;
 	
 	public static void main(String [] args) throws InterruptedException {
-		hat = new Hat(KeyboardFactory.HARDWARE, LcdFactory.BUFFERED);
+		hat = new Hat(KeyboardFactories.HARDWARE, LcdFactories.BUFFERED);
 		
 		addControllers();
 		
