@@ -13,8 +13,6 @@ import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class HatKeyboardImpl implements HatKeyboard {
 	
-	private KeyInputListener listener;
-
 	private enum KeyMapping {
 		KEY_A(HatKey.KEY_A, RaspiPin.GPIO_29),
 		KEY_B(HatKey.KEY_B, RaspiPin.GPIO_28),
@@ -52,7 +50,9 @@ public class HatKeyboardImpl implements HatKeyboard {
 	}
 
 	public void setListener(KeyInputListener listener) {
-		this.listener = listener;
+		for (KeyMapping it : KeyMapping.values()) {
+			it.listener = listener;
+		}
 	}
 
 	public void removeListener() {
