@@ -247,4 +247,9 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		return currentBufferedImage.createGraphics();
 	}
 
+	@Override
+	public void setBacklight(boolean backlight) {
+		writeTarget.setBacklight(backlight);
+	}
+
 }

@@ -284,6 +284,10 @@ public class LcdDriver {
 		Pins.BACKLIGHT.pin.high();
 	}
 	
+	public void turnOffBacklight() {
+		Pins.BACKLIGHT.pin.low();
+	}
+	
 	public void flipBacklight() {
 		Pins.BACKLIGHT.pin.toggle();
 	}

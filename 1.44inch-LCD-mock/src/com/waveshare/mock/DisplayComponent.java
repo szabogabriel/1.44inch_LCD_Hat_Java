@@ -22,6 +22,8 @@ public class DisplayComponent extends JPanel implements LcdDisplay,  WriteTarget
 	
 	private BufferedLcdDisplay lcdDisplay;
 	
+	private boolean backlight = true;
+	
 	public DisplayComponent() throws IOException {
 		lcdDisplay = new BufferedLcdDisplay(this);
 	}
@@ -89,8 +91,13 @@ public class DisplayComponent extends JPanel implements LcdDisplay,  WriteTarget
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		if (lastImage != null) {
-			g.drawImage(lastImage, 0, 0, null);
+		if (backlight) { 
+			if (lastImage != null) {
+				g.drawImage(lastImage, 0, 0, null);
+			}
+		} else {
+			g.setColor(Color.BLACK);
+			g.fillRect(0, 0, getLcdWidth(), getLcdHeight());
 		}
 	}
 
@@ -107,6 +114,11 @@ public class DisplayComponent extends JPanel implements LcdDisplay,  WriteTarget
 	@Override
 	public Graphics2D createGraphics() {
 		return lcdDisplay.createGraphics();
+	}
+
+	@Override
+	public void setBacklight(boolean backlight) {
+		this.backlight = backlight;
 	}
 	
 }

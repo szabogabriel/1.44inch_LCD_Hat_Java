@@ -485,4 +485,10 @@ public class DirectLcdDisplay extends LcdDriver implements LcdDisplay {
 		return null;
 	}
 
+	@Override
+	public void setBacklight(boolean backlight) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

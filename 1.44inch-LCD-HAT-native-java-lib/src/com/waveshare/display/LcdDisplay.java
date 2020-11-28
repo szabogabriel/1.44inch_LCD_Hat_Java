@@ -33,5 +33,7 @@ public interface LcdDisplay {
 	Graphics2D createGraphics();
 	
 	void commit();
+	
+	void setBacklight(boolean backlight);
 
 }

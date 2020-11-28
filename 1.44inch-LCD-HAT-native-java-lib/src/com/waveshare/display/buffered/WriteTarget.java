@@ -8,5 +8,7 @@ public interface WriteTarget {
 	
 	int getLcdWidth();
 	int getLcdHeight();
+	
+	void setBacklight(boolean enabled);
 
 }

@@ -61,5 +61,14 @@ public class SpiWriteTarget extends LcdDriver implements WriteTarget  {
 	public int getLcdHeight() {
 		return DISPLAY.HEIGHT;
 	}
+	
+	@Override
+	public void setBacklight(boolean enabled) {
+		if (enabled) {
+			super.turnOnBlacklight();
+		} else {
+			super.turnOffBacklight();
+		}
+	}
 
 }
