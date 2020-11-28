@@ -3,6 +3,7 @@ package com.waveshare.mock;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -103,4 +104,9 @@ public class DisplayComponent extends JPanel implements LcdDisplay,  WriteTarget
 		return 128;
 	}
 
+	@Override
+	public Graphics2D createGraphics() {
+		return lcdDisplay.createGraphics();
+	}
+	
 }

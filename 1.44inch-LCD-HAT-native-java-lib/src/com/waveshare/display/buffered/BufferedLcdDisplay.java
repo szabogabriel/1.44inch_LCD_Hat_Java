@@ -3,18 +3,24 @@ package com.waveshare.display.buffered;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import javax.swing.JComponent;
+import javax.swing.Timer;
 
 import com.waveshare.display.LcdDisplay;
 
 public class BufferedLcdDisplay implements LcdDisplay {
 
 	private static final int BUFFER_PAGE_AMOUNT = 1;
+	private static final int DISPLAY_REFRESH_INTERVAL = 20; //ms
 
 	private BlockingQueue<BufferedImage> bufferHolder = new ArrayBlockingQueue<>(BUFFER_PAGE_AMOUNT);
 
@@ -31,17 +37,30 @@ public class BufferedLcdDisplay implements LcdDisplay {
 
 	public BufferedLcdDisplay(WriteTarget writeTarget) {
 		setWriteTarget(writeTarget);
-		
-		currentBackground = new BufferedImage(writeTarget.getLcdWidth(), writeTarget.getLcdHeight(), BufferedImage.TYPE_INT_RGB);
-		currentBufferedImage = new BufferedImage(writeTarget.getLcdWidth(), writeTarget.getLcdHeight(), BufferedImage.TYPE_INT_RGB);
-		
+
+		currentBackground = new BufferedImage(writeTarget.getLcdWidth(), writeTarget.getLcdHeight(),
+				BufferedImage.TYPE_INT_RGB);
+		currentBufferedImage = new BufferedImage(writeTarget.getLcdWidth(), writeTarget.getLcdHeight(),
+				BufferedImage.TYPE_INT_RGB);
+
 		setBackground(backgroundColor);
 
 		createDataWriterThread();
+		
+		createBufferUpdateJob();
 	}
-	
+
 	public void setWriteTarget(WriteTarget wt) {
 		writeTarget = wt;
+	}
+	
+	private void createBufferUpdateJob() {
+		new Timer(DISPLAY_REFRESH_INTERVAL, new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				commit();
+			}
+		}).start();
 	}
 
 	private void createDataWriterThread() {
@@ -50,7 +69,7 @@ public class BufferedLcdDisplay implements LcdDisplay {
 			public void run() {
 				while (true) {
 					try {
-							writeTarget.write(bufferHolder.take());
+						writeTarget.write(bufferHolder.take());
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -64,13 +83,15 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		backgroundColor = color;
 		currentBackground.createGraphics().setColor(color);
 		currentBackground.createGraphics().fillRect(0, 0, writeTarget.getLcdWidth(), writeTarget.getLcdHeight());
-		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, writeTarget.getLcdWidth(), writeTarget.getLcdHeight(), null);
+		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, writeTarget.getLcdWidth(),
+				writeTarget.getLcdHeight(), null);
 	}
 
 	@Override
 	public void setBackground(BufferedImage image) {
 		currentBackground = image;
-		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, writeTarget.getLcdWidth(), writeTarget.getLcdHeight(), null);
+		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, writeTarget.getLcdWidth(),
+				writeTarget.getLcdHeight(), null);
 	}
 
 	@Override
@@ -139,7 +160,7 @@ public class BufferedLcdDisplay implements LcdDisplay {
 			setBackground(backgroundColor);
 		}
 	}
-	
+
 	@Override
 	public void print(JComponent component) {
 		component.printAll(currentBufferedImage.createGraphics());
@@ -152,8 +173,14 @@ public class BufferedLcdDisplay implements LcdDisplay {
 
 	@Override
 	public void commit() {
-		while (!bufferHolder.offer(currentBufferedImage))
-			;
+		while (!bufferHolder.offer(deepCopy(currentBufferedImage)));
+	}
+
+	private BufferedImage deepCopy(BufferedImage bi) {
+		ColorModel cm = bi.getColorModel();
+		boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+		WritableRaster raster = bi.copyData(null);
+		return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
 	}
 
 	public void demo3() throws IOException {
@@ -206,13 +233,18 @@ public class BufferedLcdDisplay implements LcdDisplay {
 
 		System.out.print("GUI Display String ");
 		t1 = System.currentTimeMillis();
-		
+
 		displayString("WaveShare", 35, 20, Color.BLUE, currentBufferedImage.createGraphics().getFont());
 		displayString("Electronic", 32, 33, Color.BLUE, currentBufferedImage.createGraphics().getFont());
 		displayString("1.44inch TFTLCD", 28, 45, Color.ORANGE, currentBufferedImage.createGraphics().getFont());
 		t2 = System.currentTimeMillis();
 		System.out.println("(" + (t2 - t1) + "ms.)");
 		commit();
+	}
+
+	@Override
+	public Graphics2D createGraphics() {
+		return currentBufferedImage.createGraphics();
 	}
 
 }

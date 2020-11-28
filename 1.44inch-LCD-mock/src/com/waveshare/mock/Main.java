@@ -5,14 +5,12 @@ import java.io.IOException;
 
 import com.waveshare.Hat;
 import com.waveshare.display.LcdDisplay;
-import com.waveshare.keyboard.Keys;
+import com.waveshare.keyboard.HatKey;
 
 public class Main {
 	
 	public static void main(String [] args) throws IOException, InterruptedException {
 		Hat hat = createHat();
-		
-		hat.keyboardHat.setListener(Keys.JOYSTICK_CENTER, e -> System.out.println("Yesss, we did it! " + e.name()));
 		
 		Thread.sleep(1000);
 		
@@ -32,5 +30,5 @@ public class Main {
 		
 		return ret;
 	}
-
+	
 }

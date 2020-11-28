@@ -3,15 +3,16 @@ package com.waveshare.mock;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.io.IOException;
+import java.io.OutputStream;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import com.waveshare.display.LcdDisplay;
-import com.waveshare.keyboard.KeyState;
-import com.waveshare.keyboard.Keys;
+import com.waveshare.keyboard.HatKey;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class MockedHat extends JFrame {
@@ -71,18 +72,19 @@ public class MockedHat extends JFrame {
 	}
 	
 	private void setupButtons() {
-		BUTTON_UP.addActionListener(e -> KEYS.getListener(Keys.JOYSTICK_UP).ifPresent(this::pressTheButton));
-		BUTTON_DOWN.addActionListener(e -> KEYS.getListener(Keys.JOYSTICK_DOWN).ifPresent(this::pressTheButton));
-		BUTTON_LEFT.addActionListener(e -> KEYS.getListener(Keys.JOYSTICK_LEFT).ifPresent(this::pressTheButton));
-		BUTTON_RIGHT.addActionListener(e -> KEYS.getListener(Keys.JOYSTICK_RIGHT).ifPresent(this::pressTheButton));
-		BUTTON_CENTER.addActionListener(e -> KEYS.getListener(Keys.JOYSTICK_CENTER).ifPresent(this::pressTheButton));
-		BUTTON_A.addActionListener(e -> KEYS.getListener(Keys.KEY_A).ifPresent(this::pressTheButton));
-		BUTTON_B.addActionListener(e -> KEYS.getListener(Keys.KEY_B).ifPresent(this::pressTheButton));
-		BUTTON_C.addActionListener(e -> KEYS.getListener(Keys.KEY_C).ifPresent(this::pressTheButton));
+		BUTTON_UP.addActionListener(e -> KEYS.getListener().ifPresent(l -> pressTheButton(HatKey.JOYSTICK_UP, l)));
+		BUTTON_DOWN.addActionListener(e -> KEYS.getListener().ifPresent(l -> pressTheButton(HatKey.JOYSTICK_DOWN, l)));
+		BUTTON_LEFT.addActionListener(e -> KEYS.getListener().ifPresent(l -> pressTheButton(HatKey.JOYSTICK_LEFT, l)));
+		BUTTON_RIGHT.addActionListener(e -> KEYS.getListener().ifPresent(l -> pressTheButton(HatKey.JOYSTICK_RIGHT, l)));
+		BUTTON_CENTER.addActionListener(e -> KEYS.getListener().ifPresent(l -> pressTheButton(HatKey.JOYSTICK_CENTER, l)));
+		BUTTON_A.addActionListener(e -> KEYS.getListener().ifPresent(l -> pressTheButton(HatKey.KEY_A, l)));
+		BUTTON_B.addActionListener(e -> KEYS.getListener().ifPresent(l -> pressTheButton(HatKey.KEY_B, l)));
+		BUTTON_C.addActionListener(e -> KEYS.getListener().ifPresent(l -> pressTheButton(HatKey.KEY_C, l)));
 	}
 		
-	private void pressTheButton(KeyInputListener listener) {
-		listener.keyStateChanged(KeyState.PRESSED);
+	private void pressTheButton(HatKey key, KeyInputListener listener) {
+		
+		listener.keyPressed(key);
 		
 		try {
 			Thread.sleep(50);
@@ -90,11 +92,11 @@ public class MockedHat extends JFrame {
 			e.printStackTrace();
 		}
 		
-		listener.keyStateChanged(KeyState.RELEASED);
+		listener.keyReleased(key);
 	}
 
 	public LcdDisplay getDisplay() {
 		return DISPLAY;
 	}
-
+	
 }

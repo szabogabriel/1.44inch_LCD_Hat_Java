@@ -1,13 +1,13 @@
 package com.waveshare.keyboard;
 
-import com.waveshare.keyboard.hat.HatKeys;
+import com.waveshare.keyboard.hat.HatKeyboardImpl;
 
 public enum KeyboardFactories implements KeyboardFactory {
 	
 	HARDWARE {
 		@Override
-		public HatKeyboard createKeyboard() {
-			return new HatKeys();
+		public HatKeyboardImpl createKeyboard() {
+			return new HatKeyboardImpl();
 		}
 	},
 	;

@@ -1,9 +1,10 @@
 package com.waveshare.keyboard.listener;
 
-import com.waveshare.keyboard.KeyState;
+import com.waveshare.keyboard.HatKey;
 
 public interface KeyInputListener {
 	
-	void keyStateChanged(KeyState state);
+	void keyPressed(HatKey key);
+	void keyReleased(HatKey key);
 
 }

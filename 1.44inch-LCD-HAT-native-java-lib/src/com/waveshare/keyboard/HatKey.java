@@ -1,6 +1,6 @@
 package com.waveshare.keyboard;
 
-public enum Keys {
+public enum HatKey {
 	
 	KEY_A,
 	KEY_B,

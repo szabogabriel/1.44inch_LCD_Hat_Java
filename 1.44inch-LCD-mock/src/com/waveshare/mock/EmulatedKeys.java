@@ -3,25 +3,25 @@ package com.waveshare.mock;
 import java.util.Optional;
 
 import com.waveshare.keyboard.HatKeyboard;
-import com.waveshare.keyboard.Keys;
+import com.waveshare.keyboard.HatKey;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class EmulatedKeys implements HatKeyboard {
 	
-	private KeyInputListener [] listeners = new KeyInputListener [Keys.values().length];
+	private KeyInputListener listeners = null;
 
 	@Override
-	public void setListener(Keys key, KeyInputListener listener) {
-		listeners[key.ordinal()] = listener;
+	public void setListener(KeyInputListener listener) {
+		listeners = listener;
 	}
 
 	@Override
-	public void removeListener(Keys key) {
-		setListener(key, null);
+	public void removeListener() {
+		setListener(null);
 	}
 	
-	public Optional<KeyInputListener> getListener(Keys key) {
-		return listeners[key.ordinal()] == null ? Optional.empty() : Optional.of(listeners[key.ordinal()]); 
+	public Optional<KeyInputListener> getListener() {
+		return Optional.ofNullable(listeners);
 	}
 
 }

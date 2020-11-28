@@ -4,8 +4,8 @@ import com.waveshare.keyboard.listener.KeyInputListener;
 
 public interface HatKeyboard {
 	
-	void setListener(Keys key, KeyInputListener listener);
+	void setListener(KeyInputListener listener);
 	
-	void removeListener(Keys key);
+	void removeListener();
 
 }

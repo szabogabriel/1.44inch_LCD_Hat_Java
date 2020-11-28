@@ -2,6 +2,7 @@ package com.waveshare.display;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
@@ -28,6 +29,8 @@ public interface LcdDisplay {
 	void clear(boolean keepBackground);
 	
 	void print(JComponent component);
+	
+	Graphics2D createGraphics();
 	
 	void commit();
 

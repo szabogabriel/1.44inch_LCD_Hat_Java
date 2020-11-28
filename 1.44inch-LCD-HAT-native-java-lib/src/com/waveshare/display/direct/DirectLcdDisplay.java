@@ -1,6 +1,7 @@
 package com.waveshare.display.direct;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -477,7 +478,11 @@ public class DirectLcdDisplay extends LcdDriver implements LcdDisplay {
 
 	@Override
 	public void print(JComponent component) {
-		// TODO Auto-generated method stub
 	}
-	
+
+	@Override
+	public Graphics2D createGraphics() {
+		return null;
+	}
+
 }

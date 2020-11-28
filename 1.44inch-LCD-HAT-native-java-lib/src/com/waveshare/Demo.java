@@ -4,9 +4,8 @@ import java.io.IOException;
 
 import com.waveshare.display.LcdFactories;
 import com.waveshare.display.buffered.BufferedLcdDisplay;
-import com.waveshare.keyboard.KeyState;
+import com.waveshare.keyboard.HatKey;
 import com.waveshare.keyboard.KeyboardFactories;
-import com.waveshare.keyboard.Keys;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class Demo {
@@ -22,18 +21,21 @@ public class Demo {
 	}
 	
 	private static void addControllers() {		
-		hat.keyboardHat.setListener(Keys.KEY_A, new KeyInputListener() {
+		hat.keyboardHat.setListener(new KeyInputListener() {
 			
 			@Override
-			public void keyStateChanged(KeyState state) {
-				if (state == KeyState.PRESSED) {
-					try {
-						((BufferedLcdDisplay)hat.lcdHat).demo3();
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
+			public void keyPressed(HatKey key) {
+				try {
+					((BufferedLcdDisplay)hat.lcdHat).demo3();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}				
+			}
+
+			@Override
+			public void keyReleased(HatKey key) {
+				
 			}
 		});
 //		INSTANCE.keyboardHat.setListener(KeyboardHat.Keys.KEY_A, new KeyInputListener() {
