@@ -2,10 +2,9 @@ package com.waveshare;
 
 import java.io.IOException;
 
-import com.waveshare.display.LcdFactories;
 import com.waveshare.display.buffered.BufferedLcdDisplay;
 import com.waveshare.keyboard.HatKey;
-import com.waveshare.keyboard.KeyboardFactories;
+import com.waveshare.keyboard.hat.HatKeyboardImpl;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class Demo {
@@ -13,7 +12,11 @@ public class Demo {
 	private static Hat hat;
 	
 	public static void main(String [] args) throws InterruptedException {
-		hat = new Hat(KeyboardFactories.HARDWARE, LcdFactories.BUFFERED);
+		try {
+			hat = new Hat(new HatKeyboardImpl(), new BufferedLcdDisplay());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		
 		addControllers();
 		
