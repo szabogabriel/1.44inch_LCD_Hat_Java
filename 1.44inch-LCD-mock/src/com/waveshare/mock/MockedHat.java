@@ -1,21 +1,24 @@
 package com.waveshare.mock;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.OutputStream;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
 import com.waveshare.display.LcdDisplay;
 import com.waveshare.keyboard.HatKey;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
-public class MockedHat extends JFrame {
+public class MockedHat extends JFrame implements LcdDisplay {
 	
 	private static final long serialVersionUID = -728375307128141501L;
 	
@@ -95,8 +98,63 @@ public class MockedHat extends JFrame {
 		listener.keyReleased(key);
 	}
 
-	public LcdDisplay getDisplay() {
-		return DISPLAY;
+	public void drawPoint(int x, int y, Color color, int size) {
+		DISPLAY.drawPoint(x, y, color, size);
+	}
+
+	public void drawLine(int startX, int startY, int endX, int endY, Color color, int lineWidth) {
+		DISPLAY.drawLine(startX, startY, endX, endY, color, lineWidth);
+	}
+
+	public void drawRectangle(int startX, int startY, int endX, int endY, Color color, boolean filled, int pixelWidth) {
+		DISPLAY.drawRectangle(startX, startY, endX, endY, color, filled, pixelWidth);
+	}
+
+	public void drawOval(int x, int y, int radius1, int radius2, Color color, boolean filled, int pixelWidth) {
+		DISPLAY.drawOval(x, y, radius1, radius2, color, filled, pixelWidth);
+	}
+
+	public void displayString(String toDisplay, int x, int y, Color fontColor, Font font) {
+		DISPLAY.displayString(toDisplay, x, y, fontColor, font);
+	}
+
+	public void displayBitmap(BufferedImage image, int x, int y) {
+		DISPLAY.displayBitmap(image, x, y);
+	}
+
+	@Override
+	public void setBackground(BufferedImage backgroundImage) {
+		DISPLAY.setBackground(backgroundImage);
+	}
+
+	@Override
+	public void clear() {
+		DISPLAY.clear();		
+	}
+
+	@Override
+	public void clear(boolean keepBackground) {
+		DISPLAY.clear(keepBackground);
+	}
+
+	@Override
+	public void print(JComponent component) {
+		DISPLAY.print(component);
+	}
+
+	@Override
+	public Graphics2D createGraphics() {
+		return DISPLAY.createGraphics();
+	}
+
+	@Override
+	public void commit() {
+		DISPLAY.commit();
+	}
+
+	@Override
+	public void setBacklight(boolean backlight) {
+		DISPLAY.setBacklight(backlight);
 	}
 	
 }

@@ -26,7 +26,7 @@ public class Main {
 		EmulatedKeys emulatedKeys = new EmulatedKeys();
 		MockedHat mh = new MockedHat(emulatedKeys);
 		
-		Hat ret = new Hat(emulatedKeys, mh.getDisplay());
+		Hat ret = new Hat(emulatedKeys, mh);
 		
 		return ret;
 	}
