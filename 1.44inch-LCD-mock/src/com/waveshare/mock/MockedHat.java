@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -67,6 +68,9 @@ public class MockedHat extends JFrame implements LcdDisplay {
 		add(panelRight, BorderLayout.EAST);
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		// center the JFrame on screen
+	    setLocationRelativeTo(null);
 		
 		SwingUtilities.invokeLater(() -> {
 			pack();

@@ -3,7 +3,6 @@ package com.waveshare.mock;
 import java.util.Optional;
 
 import com.waveshare.keyboard.HatKeyboard;
-import com.waveshare.keyboard.HatKey;
 import com.waveshare.keyboard.listener.KeyInputListener;
 
 public class EmulatedKeys implements HatKeyboard {

@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import com.waveshare.Hat;
 import com.waveshare.display.LcdDisplay;
-import com.waveshare.keyboard.HatKey;
 
 public class Main {
 	
