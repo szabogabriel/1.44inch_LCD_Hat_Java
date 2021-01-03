@@ -3,8 +3,6 @@ package com.waveshare.display.buffered;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
@@ -13,7 +11,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 import javax.swing.JComponent;
-import javax.swing.Timer;
 
 import com.waveshare.display.LcdDisplay;
 
@@ -27,9 +24,11 @@ public class BufferedLcdDisplay implements LcdDisplay {
 	private Color backgroundColor = Color.BLACK;
 
 	private BufferedImage currentBackground;
-	private BufferedImage currentBufferedImage;
+	volatile private BufferedImage currentBufferedImage;
 
 	private WriteTarget writeTarget = null;
+	
+	volatile private boolean changed = false;
 
 	public BufferedLcdDisplay() throws IOException {
 		this(new SpiWriteTarget());
@@ -55,10 +54,18 @@ public class BufferedLcdDisplay implements LcdDisplay {
 	}
 	
 	private void createBufferUpdateJob() {
-		new Timer(DISPLAY_REFRESH_INTERVAL, new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				commit();
+		new Thread(() -> {
+			while(true) {
+				if (changed) {
+					commit();
+					changed = false;
+				}
+				
+				try {
+					Thread.sleep(DISPLAY_REFRESH_INTERVAL);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}).start();
 	}
@@ -85,6 +92,7 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		currentBackground.createGraphics().fillRect(0, 0, writeTarget.getLcdWidth(), writeTarget.getLcdHeight());
 		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, writeTarget.getLcdWidth(),
 				writeTarget.getLcdHeight(), null);
+		changed = true;
 	}
 
 	@Override
@@ -92,6 +100,7 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		currentBackground = image;
 		currentBufferedImage.createGraphics().drawImage(currentBackground, 0, 0, writeTarget.getLcdWidth(),
 				writeTarget.getLcdHeight(), null);
+		changed = true;
 	}
 
 	@Override
@@ -99,6 +108,7 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		Graphics2D g = currentBufferedImage.createGraphics();
 		g.setColor(color);
 		g.drawLine(startX, startY, endX, endY);
+		changed = true;
 	}
 
 	@Override
@@ -106,6 +116,7 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		Graphics2D g = currentBufferedImage.createGraphics();
 		g.setColor(color);
 		g.drawLine(x, y, x, y);
+		changed = true;
 	}
 
 	@Override
@@ -117,6 +128,7 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		} else {
 			g.drawRect(startX, startY, endX, endY);
 		}
+		changed = true;
 	}
 
 	@Override
@@ -128,11 +140,13 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		} else {
 			g.drawOval(x, y, radius1, radius2);
 		}
+		changed = true;
 	}
 
 	@Override
 	public void displayString(String text, int x, int y, Color fontColor, Font font) {
 		displayCharArray(x, y, text.toCharArray(), fontColor, font);
+		changed = true;
 	}
 
 	public void displayCharArray(int x, int y, char[] toShow, Color fontColor, Font font) {
@@ -140,11 +154,13 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		g.setFont(font);
 		g.setColor(fontColor);
 		g.drawChars(toShow, 0, toShow.length, x, y);
+		changed = true;
 	}
 
 	@Override
 	public void displayBitmap(BufferedImage image, int x, int y) {
 		currentBufferedImage.createGraphics().drawImage(image, x, y, null);
+		changed = true;
 	}
 
 	@Override
@@ -159,11 +175,13 @@ public class BufferedLcdDisplay implements LcdDisplay {
 		} else {
 			setBackground(backgroundColor);
 		}
+		changed = true;
 	}
 
 	@Override
 	public void print(JComponent component) {
 		component.printAll(currentBufferedImage.createGraphics());
+		changed = true;
 	}
 
 	public void clear(Color color) {
