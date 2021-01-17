@@ -18,6 +18,7 @@ public class BufferedLcdDisplay implements LcdDisplay {
 
 	private static final int BUFFER_PAGE_AMOUNT = 1;
 	private static final int DISPLAY_REFRESH_INTERVAL = 20; //ms
+	private static final int DISPLAY_MAX_SKIP_FRAME = 10;
 
 	private BlockingQueue<BufferedImage> bufferHolder = new ArrayBlockingQueue<>(BUFFER_PAGE_AMOUNT);
 
@@ -29,6 +30,8 @@ public class BufferedLcdDisplay implements LcdDisplay {
 	private WriteTarget writeTarget = null;
 	
 	volatile private boolean changed = false;
+	
+	private int skippedFrame = 0;
 
 	public BufferedLcdDisplay() throws IOException {
 		this(new SpiWriteTarget());
@@ -56,9 +59,12 @@ public class BufferedLcdDisplay implements LcdDisplay {
 	private void createBufferUpdateJob() {
 		new Thread(() -> {
 			while(true) {
-				if (changed) {
+				if (changed || skippedFrame == DISPLAY_MAX_SKIP_FRAME) {
+					skippedFrame = 0;
 					commit();
 					changed = false;
+				} else {
+					skippedFrame++;
 				}
 				
 				try {
