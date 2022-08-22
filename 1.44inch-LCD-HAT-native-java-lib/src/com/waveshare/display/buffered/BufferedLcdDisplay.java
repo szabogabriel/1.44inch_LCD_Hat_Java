@@ -18,7 +18,7 @@ public class BufferedLcdDisplay implements LcdDisplay {
 
 	private static final int BUFFER_PAGE_AMOUNT = 1;
 	private static final int DISPLAY_REFRESH_INTERVAL = 20; //ms
-	private static final int DISPLAY_MAX_SKIP_FRAME = 10;
+	private static final int DISPLAY_MAX_SKIP_FRAME = 25;
 
 	private BlockingQueue<BufferedImage> bufferHolder = new ArrayBlockingQueue<>(BUFFER_PAGE_AMOUNT);
 
